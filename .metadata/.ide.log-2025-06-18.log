@@ -1,0 +1,20 @@
+2025-06-21 08:39:47,547 [INFO] WebApp:194 - Connection lost
+2025-06-21 08:39:47,891 [INFO] WebApp:191 - Connection restablished
+2025-06-21 08:50:07,505 [INFO] WebApp:194 - Connection lost
+2025-06-21 08:50:07,713 [INFO] WebApp:191 - Connection restablished
+2025-06-21 08:50:17,501 [INFO] WebApp:194 - Connection lost
+2025-06-21 08:50:17,665 [INFO] WebApp:191 - Connection restablished
+2025-06-21 10:40:34,739 [INFO] MainUpdater:2872 - connection check result : 10
+2025-06-21 10:40:34,905 [INFO] McuFinderGlobals:76 - Set McuFinderConnectedMode to true
+2025-06-21 10:40:34,909 [INFO] MultiScanPanel:200 - Auto-refresh data requested => check proxy status ongoing
+2025-06-21 10:40:34,910 [INFO] FinderPluginLoader:95 - Searching for filters in installed packs
+2025-06-21 10:40:36,246 [INFO] LoadUrlFilesThread:185 - End of LoadServerUrlFiles without Thread
+2025-06-21 10:40:36,247 [INFO] DetailPanel:341 - Set advertising image to C:/Users/lenovo/STM32Cube/Repository/\en.cubemxfinderstm32wba6.jpg
+2025-06-21 10:40:40,413 [INFO] MultiScanPanel:200 - Auto-refresh data requested => check proxy status ongoing
+2025-06-21 10:40:40,595 [INFO] LoadUrlFilesThread:185 - End of LoadServerUrlFiles without Thread
+2025-06-21 10:40:40,596 [INFO] DetailPanel:341 - Set advertising image to C:/Users/lenovo/STM32Cube/Repository/\en.cubemxfinderstm32wba6.jpg
+2025-06-21 10:41:17,239 [INFO] McuFinderGlobals:76 - Set McuFinderConnectedMode to true
+2025-06-21 10:41:17,241 [INFO] ApiDb:448 - Save user favorites file C:\Users\lenovo/.stm32cubeide/favorites.mcus.txt: 0 item(s)
+2025-06-21 10:41:17,242 [INFO] ApiDb:452 - User favorites MCUs=[]
+2025-06-21 10:41:17,243 [INFO] ApiDb:448 - Save user favorites file C:\Users\lenovo/.stm32cubeide/favorites.boards.txt: 0 item(s)
+2025-06-21 10:41:17,243 [INFO] ApiDb:452 - User favorites Boards=[]

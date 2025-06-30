@@ -1,0 +1,18 @@
+12:48:42 **** Incremental Build of configuration Debug for project 05_GPIO_drivers ****
+make -j12 all 
+arm-none-eabi-gcc "../drivers/src/stm32f446xx_gpio_driver.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -c -I"C:/Users/lenovo/Documents/Learning/Udemy/stm32_learn/05_GPIO_drivers/drivers/inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"drivers/src/stm32f446xx_gpio_driver.d" -MT"drivers/src/stm32f446xx_gpio_driver.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "drivers/src/stm32f446xx_gpio_driver.o"
+arm-none-eabi-gcc "../Src/03_Btn_Interrupt.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -c -I"C:/Users/lenovo/Documents/Learning/Udemy/stm32_learn/05_GPIO_drivers/drivers/inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/03_Btn_Interrupt.d" -MT"Src/03_Btn_Interrupt.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/03_Btn_Interrupt.o"
+arm-none-eabi-gcc -o "05_GPIO_drivers.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\lenovo\Documents\Learning\Udemy\stm32_learn\05_GPIO_drivers\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="05_GPIO_drivers.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 05_GPIO_drivers.elf
+ 
+arm-none-eabi-size  05_GPIO_drivers.elf 
+arm-none-eabi-objdump -h -S 05_GPIO_drivers.elf  > "05_GPIO_drivers.list"
+   text	   data	    bss	    dec	    hex	filename
+   2560	      0	   1568	   4128	   1020	05_GPIO_drivers.elf
+Finished building: default.size.stdout
+ 
+Finished building: 05_GPIO_drivers.list
+ 
+
+12:48:46 Build Finished. 0 errors, 0 warnings. (took 3s.702ms)
+

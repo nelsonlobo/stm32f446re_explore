@@ -1,0 +1,54 @@
+/*
+ * stm32f446xx_gpio_driver.h
+ *
+ *  Created on: Jun 21, 2025
+ *      Author: lenovo
+ */
+
+#ifndef INC_STM32F446XX_GPIO_DRIVER_H_
+#define INC_STM32F446XX_GPIO_DRIVER_H_
+
+#include "stdint.h"
+#include "stdbool.h"
+#include "stm32f446xx.h"
+
+typedef struct
+{
+	uint8_t GPIO_PinNumber;
+	uint8_t GPIO_PinMode;
+	uint8_t GPIO_PinSpeed;
+	uint8_t GPIO_PinPuPdControl;
+	uint8_t GPIO_PinOPType;
+	uint8_t GPIO_PinAltFnMode;
+}GPIO_PinConfig_t;
+
+typedef struct
+{
+	GPIO_RegDef_t *pGPIOx;
+	GPIO_PinConfig_t GPIO_PinConfig;
+}GPIO_Handle_t;
+
+
+/*
+ * APIs supported by this driver
+ */
+//Peripheral clock setup
+void GPIO_PClk_Ctrl(GPIO_RegDef_t *pGPIOx, uint8_t status);
+
+//GPIO init & deinit
+void GPIO_Init(GPIO_Handle_t *pGPIOHandle);
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
+
+//GPIO data read & write
+bool GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber);
+uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx);
+void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber,bool status);
+void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx,uint16_t value);
+void GPIO_TogglePin(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber);
+
+//IRQ and ISR related funcions
+void GPIO_IQRConfig(uint8_t IRQNumber, uint8_t IRQPriority, bool status);
+void GPIO_IQRHandling(uint8_t pinNumber);
+
+
+#endif /* INC_STM32F446XX_GPIO_DRIVER_H_ */

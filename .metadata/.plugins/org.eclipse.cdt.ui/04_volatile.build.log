@@ -1,0 +1,17 @@
+17:28:42 **** Incremental Build of configuration Debug for project 04_volatile ****
+make -j12 all 
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/main.o"
+arm-none-eabi-gcc -o "04_volatile.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\lenovo\Documents\Learning\Udemy\stm32_learn\04_volatile\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="04_volatile.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 04_volatile.elf
+ 
+arm-none-eabi-size  04_volatile.elf 
+arm-none-eabi-objdump -h -S 04_volatile.elf  > "04_volatile.list"
+   text	   data	    bss	    dec	    hex	filename
+    740	      4	   1572	   2316	    90c	04_volatile.elf
+Finished building: default.size.stdout
+ 
+Finished building: 04_volatile.list
+ 
+
+17:28:43 Build Finished. 0 errors, 0 warnings. (took 638ms)
+

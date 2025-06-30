@@ -1,0 +1,11 @@
+../drivers/src/stm32f446xx_gpio_driver.c:29:6:GPIO_PClk_Ctrl	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:123:6:GPIO_Init	32	static
+../drivers/src/stm32f446xx_gpio_driver.c:212:6:GPIO_DeInit	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:263:6:GPIO_ReadFromInputPin	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:279:10:GPIO_ReadFromInputPort	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:297:6:GPIO_WriteToOutputPin	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:321:6:GPIO_WriteToOutputPort	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:338:6:GPIO_TogglePin	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:356:6:GPIO_IRQConfig	16	static
+../drivers/src/stm32f446xx_gpio_driver.c:397:6:GPIO_IRQPriorityConfig	24	static
+../drivers/src/stm32f446xx_gpio_driver.c:416:6:GPIO_IRQHandling	16	static
