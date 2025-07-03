@@ -124,6 +124,8 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 {
 	uint32_t temp = 0;
 
+	GPIO_PClk_Ctrl(pGPIOHandle->pGPIOx,ENABLE);
+
 	//Configure the mode register
 	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANLG)
 	{

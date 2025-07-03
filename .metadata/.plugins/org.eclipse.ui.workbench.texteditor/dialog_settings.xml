@@ -3,6 +3,9 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
+		<item value="SPI_GetFLagStatus"/>
+		<item value="CPOL"/>
+		<item value="SPI_I2S2_BASEADDR"/>
 		<item value="IRQNumber"/>
 		<item value="GPIOA_BASEADDR"/>
 		<item value="PERIPHERAL_BASEADDR"/>
@@ -15,8 +18,6 @@
 		<item value="EN()"/>
 		<item value="|="/>
 		<item value="putchar"/>
-		<item value="_write"/>
-		<item value="__write"/>
 	</list>
 	<list key="replacehistory">
 		<item value="IRQPosition"/>

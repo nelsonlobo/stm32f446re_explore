@@ -1,0 +1,6 @@
+../drivers/src/stm32f446xx_spi_driver.c:12:6:SPI_PClk_Ctrl	10
+../drivers/src/stm32f446xx_spi_driver.c:63:6:SPI_Init	3
+../drivers/src/stm32f446xx_spi_driver.c:103:6:SPI_GetFLagStatus	2
+../drivers/src/stm32f446xx_spi_driver.c:113:6:SPI_SendData	4
+../drivers/src/stm32f446xx_spi_driver.c:137:6:SPI_SSOEConfig	2
+../drivers/src/stm32f446xx_spi_driver.c:149:6:SPI_PeripheralControl	2

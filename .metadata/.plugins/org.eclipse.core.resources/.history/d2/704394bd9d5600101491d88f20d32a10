@@ -1,0 +1,25 @@
+/*
+ * 04_SPI_TX_test.c
+ *
+ *  Created on: Jul 1, 2025
+ *      Author: Nelson Lobo
+ */
+
+/*
+ * PA4	--> SPI1_NSS
+ * PA5	--> SPI1_SCK
+ * PA6	--> SPI1_MISO
+ * PA7	--> SPI1_MOSI
+ */
+#include "string.h"
+#include "stm32f446xx.h"
+
+
+int main(void)
+{
+	GPIO_Handle_t SPIPins;
+
+	SPIPins.pGPIOx = GPIOA;
+	SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
+	return 0;
+}
