@@ -1,8 +1,8 @@
 /*
  * stm32f446xx_spi_driver.h
  *
- *  Created on: Jul 1, 2025
- *      Author: lenovo
+ *  Created on: Jul 8, 2025
+ *      Author: Nelson Lobo
  */
 
 #ifndef INC_STM32F446XX_SPI_DRIVER_H_
@@ -34,27 +34,27 @@
 /*
  * Bit position definitions of SPI CR2 register
  */
-#define SPI_CR2_TXEIE		7
-#define SPI_CR2_RXNEIE		6
-#define SPI_CR2_ERRIE		5
-#define SPI_CR2_FRF			4
-#define SPI_CR2_SSOE		2
-#define SPI_CR2_TXDMAEN		1
 #define SPI_CR2_RXDMAEN		0
+#define SPI_CR2_TXDMAEN		1
+#define SPI_CR2_SSOE		2
+#define SPI_CR2_FRF			4
+#define SPI_CR2_ERRIE		5
+#define SPI_CR2_RXNEIE		6
+#define SPI_CR2_TXEIE		7
 
 
 /*
  * Bit position definitions for SPI_SR register
  */
-#define SPI_SR_FRE			8
-#define SPI_SR_BSY			7
-#define SPI_SR_OVR			6
-#define SPI_SR_MODF			5
-#define SPI_SR_CRCERR		4
-#define SPI_SR_UDR			3
-#define SPI_SR_CHSIDE		2
-#define SPI_SR_TXE			1
 #define SPI_SR_RXNE			0
+#define SPI_SR_TXE			1
+#define SPI_SR_CHSIDE		2
+#define SPI_SR_UDR			3
+#define SPI_SR_CRCERR		4
+#define SPI_SR_MODF			5
+#define SPI_SR_OVR			6
+#define SPI_SR_BSY			7
+#define SPI_SR_FRE			8
 
 
 typedef struct
@@ -79,15 +79,17 @@ typedef struct
 /*
  * SPI device Mode
  */
-#define SPI_DEVICE_MODE_MASTER			1
 #define SPI_DEVICE_MODE_SLAVE			0
+#define SPI_DEVICE_MODE_MASTER			1
+
 
 /*
  * SPI Bus config
  */
 #define SPI_BUS_CONFIG_FULL_DUPLEX		1
 #define SPI_BUS_CONFIG_HALF_DUPLEX		2
-#define SPI_BUS_CONFIG_SIMPLEX_RXONLY	3
+#define SPI_BUS_CONFIG_SIMPLEX_TXONLY	3
+#define SPI_BUS_CONFIG_SIMPLEX_RXONLY	4
 
 /*
  * SPI Clock speed
@@ -104,8 +106,8 @@ typedef struct
 /*
  * SPI Data frame format
  */
-#define SPI_DFF_8BITS		0
-#define SPI_DFF_16BITS		1
+#define SPI_DFF_8BITS					0
+#define SPI_DFF_16BITS					1
 
 /*
  * SPI Clock polarity
@@ -113,8 +115,8 @@ typedef struct
  * CPOL = 0 then Idle state is logic low
  * CPOL = 1 then Idle state is logic high
  */
-#define SPI_CPOL_LOW			0
-#define SPI_CPOL_HIGH			1
+#define SPI_CPOL_LOW					0
+#define SPI_CPOL_HIGH					1
 
 /*
  * SPI clock phase selection bit.
@@ -122,21 +124,21 @@ typedef struct
  * CPHA = 0 Leading edge
  * CPHA = 1 trailing edge
  */
-#define SPI_CPHA_LOW			0
-#define SPI_CPHA_HIGH			1
+#define SPI_CPHA_LOW					0
+#define SPI_CPHA_HIGH					1
 
 /*
  * SPI Slave select management bit
  */
-#define SPI_SSM_DIS			0
-#define SPI_SSM_EN			1
+#define SPI_SSM_DIS						0
+#define SPI_SSM_EN						1
 
-#define SPI_SSI_DIS			0
-#define SPI_SSI_EN			1
+#define SPI_SSI_DIS						0
+#define SPI_SSI_EN						1
 
-#define	SPI_TXE_FLAG		(1<<SPI_SR_TXE)
-#define	SPI_RXE_FLAG		(1<<SPI_SR_RXNE)
-#define SPI_BSY_FLAG		(1<<SPI_SR_BSY)
+#define	SPI_TXE_FLAG					(1<<SPI_SR_TXE)
+#define	SPI_RXE_FLAG					(1<<SPI_SR_RXNE)
+#define SPI_BSY_FLAG					(1<<SPI_SR_BSY)
 //Peripheral clock setup
 void SPI_PClk_Ctrl(SPI_RegDef_t *pGPIOx, uint8_t status);
 
@@ -161,6 +163,6 @@ void SPI_IRQHandling(SPI_Handle_t *pHandle);
 void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t status);
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t status);
 
-bool SPI_GetFLagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName);
+bool SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName);
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */

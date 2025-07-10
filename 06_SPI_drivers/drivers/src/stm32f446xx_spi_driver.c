@@ -1,8 +1,8 @@
 /*
  * stm32f446xx_spi_driver.c
  *
- *  Created on: Jul 1, 2025
- *      Author: lenovo
+ *  Created on: Jul 8, 2025
+ *      Author: Nelson Lobo
  */
 
 
@@ -100,9 +100,9 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 	pSPIHandle->pSPIx->CR1 = tempReg;
 }
 
-bool SPI_GetFLagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName)
+bool SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName)
 {
-	if(pSPIx->SR & flagName)
+	if(pSPIx->SR & flagName)	//Compare both bit-fields
 	{
 		return FLAG_SET;
 	}
@@ -115,8 +115,9 @@ void SPI_SendData(SPI_RegDef_t *pSPIx,uint8_t *pTXBuffer, uint32_t len)
 	while(len >0)
 	{
 		//1. Wait until TXNE is set
-		while(SPI_GetFLagStatus(pSPIx, SPI_TXE_FLAG)==FLAG_CLEAR);
+		while(SPI_GetFlagStatus(pSPIx, SPI_TXE_FLAG)==FLAG_CLEAR);
 
+		//2. Check for DFF bit whether set to 16-bits or 8-bits
 		if((pSPIx->CR1 & (1<<SPI_CR1_DFF)))
 		{
 			//16bit data
@@ -140,7 +141,7 @@ void SPI_ReceiveData(SPI_RegDef_t *pSPIx,uint8_t *pRXBuffer, uint32_t len)
 	while(len >0)
 	{
 		//1. Wait until RXNE is set
-		while(SPI_GetFLagStatus(pSPIx, SPI_RXE_FLAG)==FLAG_CLEAR);
+		while(SPI_GetFlagStatus(pSPIx, SPI_RXE_FLAG)==FLAG_CLEAR);
 
 		//2. Check the DFF bit in CR1
 		if((pSPIx->CR1 & (1<<SPI_CR1_DFF)))
