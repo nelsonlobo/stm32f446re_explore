@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;04_Volatile&apos;" deleteContents="true" description="Delete resource &apos;04_Volatile&apos;" element1="/04_Volatile" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1750418519492"/>&#x0A;<refactoring comment="Delete resource &apos;05_GPIO_drivers/drivers/src/stm32f446xx.c&apos;" deleteContents="false" description="Delete resource &apos;05_GPIO_drivers/drivers/src/stm32f446xx.c&apos;" element1="/05_GPIO_drivers/drivers/src/stm32f446xx.c" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1750513250473"/>
-</session>

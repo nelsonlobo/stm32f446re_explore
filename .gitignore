@@ -1,7 +1,35 @@
-build/
-*.o
+# STM32CubeIDE / Eclipse workspace ignore patterns
+
+# Eclipse workspace metadata
+.metadata/
+/.metadata/
+
+# Build output directories
+Debug/
+Release/
+Build/
 *.elf
+*.list
+*.map
 *.hex
 *.bin
-.settings/
+*.o
+*.d
+*.su
+*.cyclo
+*.settings/
 *.launch
+# IDE-specific configuration files (often contain local paths or user preferences)
+.settings/
+
+# Various logs, temporary files, and history files
+*.log
+*.pdom
+*.snap
+*.tree
+dialog_settings.xml
+launchConfigurationHistory.xml
+workbench.xmi
+*.history/
+# If feedback.txt is genuinely not meant for version control
+feedback.txt
