@@ -10,6 +10,7 @@
 
 #include "stdint.h"
 #include "stdbool.h"
+#include "stddef.h"
 #include "stm32f446xx.h"
 
 /*
@@ -71,8 +72,16 @@ typedef struct
 
 typedef struct
 {
-	SPI_RegDef_t *pSPIx;
-	SPI_Config_t SPIConfig;
+	SPI_RegDef_t 		*pSPIx;
+	SPI_Config_t 		SPIConfig;
+
+	//Following member elements are important to implement interrupt mode
+	volatile uint8_t	*pTxBuffer;
+	volatile uint8_t 	*pRxBuffer;
+	uint32_t			txLen;
+	uint32_t			rxLen;
+	uint32_t			txState;
+	uint32_t			rxState;
 }SPI_Handle_t;
 
 
@@ -139,6 +148,20 @@ typedef struct
 #define	SPI_TXE_FLAG					(1<<SPI_SR_TXE)
 #define	SPI_RXE_FLAG					(1<<SPI_SR_RXNE)
 #define SPI_BSY_FLAG					(1<<SPI_SR_BSY)
+
+//These are most crucial when implementing SPI in interrupt mode
+#define SPI_RDY							0
+#define SPI_RX_BSY						1
+#define SPI_TX_BSY						2
+
+//Possible SPI application events
+#define SPI_EVENT_TX_COMPLETE			1
+#define SPI_EVENT_RX_COMPLETE			2
+#define SPI_EVENT_MODF_ERR				3
+#define SPI_EVENT_OVR_ERR				4
+#define SPI_EVENT_CRC_ERR				5
+#define SPI_EVENT_FRE_ERR				6
+
 //Peripheral clock setup
 void SPI_PClk_Ctrl(SPI_RegDef_t *pGPIOx, uint8_t status);
 
@@ -154,9 +177,15 @@ void SPI_SendData(SPI_RegDef_t *pSPIx,uint8_t *pTXBuffer, uint32_t len);
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx,uint8_t *pRXBuffer, uint32_t len);
 
 /*
+ * Data Send and Receive Interrupt Based API
+ */
+uint8_t SPI_SendDataIntr(SPI_Handle_t *pSPIHandle,volatile uint8_t *pTXBuffer, uint32_t len);
+uint8_t SPI_ReceiveDataIntr(SPI_Handle_t *pSPIHandle,volatile uint8_t *pRXBuffer, uint32_t len);
+
+/*
  * IRQ configuration and ISR handling
  */
-void SPI_IRQInterruptConfig(uint8_t IRQNumber, uint8_t status);
+void SPI_IRQConfig(uint8_t IRQPosition, bool status);
 void SPI_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
 void SPI_IRQHandling(SPI_Handle_t *pHandle);
 
@@ -164,5 +193,10 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t status);
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t status);
 
 bool SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName);
+void SPI_clrOVRFlag(SPI_RegDef_t *pSPIx);
+void SPI_closeTransmission(SPI_Handle_t *pSPIHandle);
+void SPI_closeReception(SPI_Handle_t *pSPIHandle);
+//void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle,uint8_t evntVal);
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, uint8_t evntVal);
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */

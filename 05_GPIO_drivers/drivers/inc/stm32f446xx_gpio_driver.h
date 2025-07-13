@@ -47,7 +47,7 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx,uint16_t value);
 void GPIO_TogglePin(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber);
 
 //IRQ and ISR related funcions
-void GPIO_IRQConfig(uint8_t IRQPosition, bool status);
+void GPIO_IRQConfig(uint8_t IRQPosition, uint8_t status);
 void GPIO_IRQPriorityConfig(uint8_t IRQPosition, uint32_t IRQPriority);
 void GPIO_IRQHandling(uint8_t pinNumber);
 

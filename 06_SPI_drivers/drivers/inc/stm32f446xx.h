@@ -12,6 +12,29 @@
 
 #include <stdint.h>
 
+
+// --- Clock Configuration Selection Macros ---
+// Define ONE of these macros to select your desired system clock
+// If none are defined, a default basic configuration (e.g., HSI 16MHz) might be used or result in no clock setup.
+
+//#define SYSCLK_FREQ_HSI_8MHZ      // Option 1: Internal Oscillator (HSI) at 8MHz
+#define SYSCLK_FREQ_HSI_16MHZ      // Option 1: Internal Oscillator (HSI) at 16MHz
+//#define SYSCLK_FREQ_HSE_16MHZ   // Option 2: External Oscillator (HSE) at 16MHz
+//#define SYSCLK_FREQ_HSE_PLL_48MHZ // Option 3: External Oscillator (HSE) with PLL at 48MHz
+
+// --- HSE Bypass Mode Macro ---
+// Define this macro to enable HSE Bypass mode if you are providing an external clock signal
+// (e.g., from a signal generator) directly to the OSC_IN pin, instead of using a crystal.
+// If using a crystal, DO NOT define this macro.
+//#define HSE_BYPASS_MODE_ENABLE // Option 4: Enable HSE Bypass mode
+
+// --- Forward declaration for SystemClock_Config ---
+void SystemClock_Config(void);
+
+// Note: Ensure PWR_RegDef_t, FLASH_TypeDef, PWR, and FLASH macros are correctly defined in this header.
+// (You should have these from previous steps).
+
+
 /*******************Start Processor specific details*************************/
 /*
  * ARM cortex MX processors NVIC ISERx register address
@@ -180,8 +203,43 @@ typedef struct
 	volatile uint32_t DCKCFGR2;			//0x94
 }RCC_RegDef_t;
 
+#define RCC_CR_REG_OFFSET		0x00
+#define RCC_CR_REG_ADDR			(RCC_BASEADDR+RCC_CR_REG_OFFSET)
+
+#define RCC_CFG_REG_OFFSET		0x08
+#define RCC_CFG_REG_ADDR		(RCC_BASEADDR + RCC_CFG_REG_OFFSET)
+
+#define RCC_GPIOC_REG_OFFSET	0x30
+#define RCC_GPIOC_REG_ADDR		(RCC_BASEADDR + RCC_GPIOC_REG_OFFSET)
 
 #define RCC						((RCC_RegDef_t*)RCC_BASEADDR)
+
+// Define HSI_VALUE if not already in stm32f446xx.h
+#ifndef HSI_VALUE
+#define HSI_VALUE    ((uint32_t)16000000) // Default HSI frequency for STM32F4
+#endif
+
+// Define constants for clock configuration based on CubeMX output
+// These would typically be part of a HAL-like structure or global defines if not using HAL
+#define PWR_REGULATOR_VOLTAGE_SCALE3 (0x00004000U) // From stm32f4xx_hal_rcc.h / stm32f4xx_hal_pwr.h (PWR_CR_VOS)
+#define RCC_OSCILLATORTYPE_HSI       (0x00000001U) // From stm32f4xx_hal_rcc.h (RCC_CR_HSION)
+#define RCC_HSI_ON                   (0x00000001U) // From stm32f4xx_hal_rcc.h (RCC_CR_HSION)
+#define RCC_HSICALIBRATION_DEFAULT   (0x00000010U) // From stm32f4xx_hal_rcc.h (RCC_CR_HSICAL_Msk >> RCC_CR_HSICAL_Pos, default 16)
+#define RCC_PLL_ON                   (0x00000002U) // From stm32f4xx_hal_rcc.h (RCC_CR_PLLON)
+#define RCC_PLLSOURCE_HSI            (0x00000000U) // From stm32f4xx_hal_rcc.h (RCC_PLLCFGR_PLLSRC_HSI)
+#define RCC_PLLP_DIV2                (0x00000000U) // From stm32f4xx_hal_rcc.h (RCC_PLLCFGR_PLLP_DIV2)
+#define RCC_CLOCKTYPE_HCLK           (0x00000001U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_HPRE_Pos)
+#define RCC_CLOCKTYPE_SYSCLK         (0x00000002U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_SW_Pos)
+#define RCC_CLOCKTYPE_PCLK1          (0x00000004U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE1_Pos)
+#define RCC_CLOCKTYPE_PCLK2          (0x00000008U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE2_Pos)
+#define RCC_SYSCLKSOURCE_PLLCLK      (0x00000008U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_SW_PLL)
+#define RCC_SYSCLK_DIV4              (0x00000080U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_HPRE_DIV4)
+#define RCC_HCLK_DIV2                (0x00000100U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE1_DIV2)
+#define RCC_HCLK_DIV1                (0x00000000U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE2_DIV1)
+
+// Define Flash Latency (for example, FLASH_LATENCY_0 from stm32f4xx_hal_flash.h)
+#define FLASH_ACR_LATENCY_0WS        (0x00000000U) // For 0 wait states
+
 
 /*
  * Structure to manage the EXTI related registers
@@ -199,6 +257,53 @@ typedef struct
 }EXTI_RegDef_t;
 
 #define EXTI					((EXTI_RegDef_t*)EXTI_BASEADDR)
+
+
+/*
+ * Base addresses of peripherals which are interfaced with the APB1 bus
+ * APB1: Advanced peripheral bus
+ */
+// ... (your existing APB1 definitions) ...
+#define PWR_BASEADDR            (APB1PERIPH_BASEADDR+0x7000) // Your existing definition
+// ...
+
+/*
+ * FLASH Access Control Register (ACR) base address.
+ * FLASH is a special peripheral, its registers aren't part of a common struct in the same way.
+ * The ACR is directly accessed for latency settings.
+ */
+#define FLASH_R_BASE            0x40023C00U     // Base address of FLASH registers
+#define FLASH_ACR_OFFSET        0x00U           // ACR is at offset 0 from FLASH_R_BASE
+
+/*
+ * peripheral register definition structure for PWR (Power Control)
+ */
+typedef struct
+{
+    volatile uint32_t CR;     /*!< PWR power control register,                    Address offset: 0x00 */
+    volatile uint32_t CSR;    /*!< PWR power control/status register,             Address offset: 0x04 */
+} PWR_RegDef_t;
+
+// ... (after other peripheral definitions like RCC, EXTI, SYSCFG, SPI) ...
+
+#define PWR                     ((PWR_RegDef_t*)PWR_BASEADDR)
+//#define FLASH_ACR_LATENCY_0WS   (0x00000000U) // For 0 wait states
+
+
+// Add this structure definition near your other peripheral register definitions (e.g., after SPI_RegDef_t)
+typedef struct
+{
+    volatile uint32_t ACR;        /*!< FLASH access control register, Address offset: 0x00 */
+    volatile uint32_t KEYR;       /*!< FLASH key register,           Address offset: 0x04 */
+    volatile uint32_t OPTKEYR;    /*!< FLASH option key register,    Address offset: 0x08 */
+    volatile uint32_t SR;         /*!< FLASH status register,        Address offset: 0x0C */
+    volatile uint32_t CR;         /*!< FLASH control register,       Address offset: 0x10 */
+    volatile uint32_t OPTCR;      /*!< FLASH option control register, Address offset: 0x14 */
+    volatile uint32_t OPTCR1;     /*!< FLASH option control register 1, Address offset: 0x18 */
+} FLASH_TypeDef; // Using TypeDef as typically done in HAL/CMSIS
+
+// Add this peripheral definition along with GPIOA, GPIOB, RCC, EXTI, etc.
+#define FLASH                   ((FLASH_TypeDef *)FLASH_R_BASE)
 
 /*
  * Peripheral Clock Enable macros for SYSCFG registers
@@ -411,6 +516,12 @@ typedef struct
 #define IRQN_EXIT4				10
 #define IRQN_EXIT9_5			23
 #define IRQN_EXIT15_10			40
+
+//SPI Related IRQ positions
+#define IRQN_SPI1				35
+#define IRQN_SPI2				36
+#define IRQN_SPI3				51
+#define IRQN_SPI4				84
 
 #define NVIC_IRQ_PRIO0			0
 #define NVIC_IRQ_PRIO1			1

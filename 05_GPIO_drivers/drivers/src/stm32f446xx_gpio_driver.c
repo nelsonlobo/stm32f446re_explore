@@ -355,7 +355,8 @@ void GPIO_TogglePin(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber)
  *
  * @note	- none
  */
-void GPIO_IRQConfig(uint8_t IRQPosition, bool status)
+volatile uint32_t storeVal = 0;
+void GPIO_IRQConfig(uint8_t IRQPosition, uint8_t status)
 {
 	if(status == ENABLE)
 	{

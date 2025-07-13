@@ -7,7 +7,6 @@
 
 #include "string.h"
 #include "stm32f446xx.h"
-#include "stm32f446xx_gpio_driver.h"
 
 void delay(void)
 {
@@ -16,6 +15,11 @@ void delay(void)
 
 int main (void)
 {
+	*NVIC_ISER0 |= (1<<4);
+	*NVIC_ICER0 &= ~(1<<4);
+	delay();
+	*NVIC_ISER0 |= (1<<4);
+
 	GPIO_Handle_t GpioLed,GpioBtn;
 	memset(&GpioLed,0,sizeof(GpioLed));
 	memset(&GpioBtn,0,sizeof(GpioBtn));
