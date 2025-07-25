@@ -10,13 +10,11 @@
 - Introduction ot SWV (Serial Wire Viewer), also known to use SWO line in the ITM hardware.
 - To use the SWV we need to use the following piece of code in syscall.c
 ```c
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//					Implementation of printf like feature using ARM Cortex M3/M4/ ITM functionality
-//					This function will not work for ARM Cortex M0/M0+
-//					If you are using Cortex M0, then you can use semihosting feature of openOCD
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+/*
+ * Implementation of printf like feature using ARM Cortex M3/M4/ ITM functionality
+ * This function will not work for ARM Cortex M0/M0+
+ * If you are using Cortex M0, then you can use semihosting feature of openOCD
+ */
 //Debug Exception and Monitor Control Register base address
 #define DEMCR        			*((volatile uint32_t*) 0xE000EDFCU )
 
@@ -64,7 +62,7 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 ### 5. GPIO drivers
 1. Polling
 2. Interrupt driven
---- 
+---
 ### 6. SPI drivers
 1. Polling
    - Master
@@ -73,3 +71,16 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
    - Master
    - Slave 
 ---
+### 7. Using ARM's SEMI-hosting feature
+- __Linker Argument settings__
+  - `specs=rdimon.specs -lc -lrdimon`
+- __Debug configurations of your application__
+  - `monitor arm semihosting enable`
+- __in main.c use below codes__
+  - Declare `extern void initialise_monitor_handles();`
+  - Call this function in start of main function `initialise_monitor_handles();`
+---
+### 8. I2C drivers
+1. Polling (Transmit/Receive)
+   - Master
+   - Slave
