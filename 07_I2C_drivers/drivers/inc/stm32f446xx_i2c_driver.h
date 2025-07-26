@@ -129,7 +129,6 @@ typedef struct
 	uint8_t 	I2C_AddrMode;
 	uint16_t 	I2C_DeviceAddress;
 	uint8_t 	I2C_AckControl;
-	uint8_t 	I2C_RepeatedStart;
 	uint16_t	I2C_FMDutyCycle;
 }I2C_Config_t;
 
@@ -140,8 +139,22 @@ typedef struct
 {
 	I2C_RegDef_t	*pI2Cx;
 	I2C_Config_t	I2C_Config;
+
+	uint8_t 		*pTxBuffer;
+	uint8_t			*pRxBuffer;
+	uint32_t 		txLen;
+	uint32_t		rxLen;
+	uint8_t			TxRxState;	//I2C_READY/BUSY_RX/BUSY_TX
+	uint8_t			DevAddr;
+	uint32_t		RxSize;
+	uint8_t			SR;
+	uint8_t 		rxComplete;
 }I2C_Handle_t;
 
+
+#define I2C_READY						0
+#define I2C_BUSY_RX						1
+#define I2C_BUSY_TX						2
 
 /*
  * I2C read/n-Write
@@ -187,6 +200,16 @@ typedef struct
 #define I2C_FLAG_TIMEOUT				(1<<I2C_SR1_TIMEOUT)
 #define I2C_FLAG_SMBALERT				(1<<I2C_SR1_SMBALERT)
 
+//I2C Events macros
+#define I2C_EV_TX_CMPLT					0
+#define I2C_EV_RX_CMPLT					1
+#define I2C_EV_STOP						2
+
+#define I2C_ERROR_BERR  				3
+#define I2C_ERROR_ARLO  				4
+#define I2C_ERROR_AF    				5
+#define I2C_ERROR_OVR   				6
+#define I2C_ERROR_TIMEOUT 				7
 
 //Peripheral clock setup
 void I2C_PClk_Ctrl(I2C_RegDef_t *pGPIOx, uint8_t status);
@@ -199,24 +222,29 @@ void I2C_DeInit(I2C_RegDef_t *pI2Cx);
 /*
  * Data Send and Receive Polling based API
  */
-void I2C_MasterSendData(I2C_Handle_t *pI2CHandle,uint8_t *pTxBuffer, uint32_t len, uint8_t slaveAddr);
-void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer, uint32_t len, uint8_t slaveAddr);
+void I2C_MasterSendData(I2C_Handle_t *pI2CHandle,uint8_t *pTxBuffer, uint32_t len, uint8_t slaveAddr,uint8_t SR);
+void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer, uint32_t len, uint8_t slaveAddr,uint8_t SR);
 
 /*
  * Data Send and Receive Interrupt based API
  */
-
+uint8_t I2C_MasterSendDataIntr(I2C_Handle_t *pI2CHandle,uint8_t *pTxBuffer, uint32_t len, uint8_t slaveAddr,uint8_t SR);
+uint8_t I2C_MasterReceiveDataIntr(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer, uint32_t len, uint8_t slaveAddr,uint8_t SR);
 
 /*
  * IRQ configuration and ISR handling
  */
 void I2C_IRQConfig(uint8_t IRQPosition, bool status);
 void I2C_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
-
+void I2C_EV_IRQHandling(I2C_Handle_t *pI2CHandle);
+void I2C_ER_IRQHandling(I2C_Handle_t *pI2CHandle);
 
 void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t status);
 uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint32_t flagName);
 void I2C_ManageACK_bit(I2C_RegDef_t *pI2Cx,uint8_t status);
+
+void I2C_CloseSendData(I2C_Handle_t *pI2CHandle);
+void I2C_CloseReceiveData(I2C_Handle_t *pI2CHandle);
 /*
  * I2C application callback
  */

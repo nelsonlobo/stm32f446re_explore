@@ -84,3 +84,6 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 1. Polling (Transmit/Receive)
    - Master
    - Slave
+2. Interrupt (Transmit/Receive)
+   - Master
+   - Slave   

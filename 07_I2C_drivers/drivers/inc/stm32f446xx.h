@@ -9,10 +9,11 @@
 #define INC_STM32F446XX_H_
 
 
-
+#include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <stdbool.h>
-
+#include <stddef.h>
 
 
 /*******************Start Processor specific details*************************/
@@ -579,9 +580,9 @@ typedef struct
 //Reserved
 #define I2C_CR2_ITERREN			8
 #define I2C_CR2_ITEVTEN			9
-#define I2C_ITBUFEN				10
-#define I2C_DMAEN				11
-#define I2C_LAST				12
+#define I2C_CR2_ITBUFEN			10
+#define I2C_CR2_DMAEN			11
+#define I2C_CR2_LAST			12
 
 /*
  * Bit position definition for I2C_OAR1
