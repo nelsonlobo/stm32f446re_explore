@@ -117,9 +117,9 @@
  ********************************************
  */
 
-#define MY_I2C_ADDR			0x61
-#define ARDUINO_SLAVE_ADDR	0x68
 
+#define ARDUINO_SLAVE_ADDR	0x68
+#define MY_I2C_ADDR			0x61
 /*
  * Configuration structure for I2Cx peripheral
  */
@@ -204,12 +204,13 @@ typedef struct
 #define I2C_EV_TX_CMPLT					0
 #define I2C_EV_RX_CMPLT					1
 #define I2C_EV_STOP						2
-
 #define I2C_ERROR_BERR  				3
 #define I2C_ERROR_ARLO  				4
 #define I2C_ERROR_AF    				5
 #define I2C_ERROR_OVR   				6
 #define I2C_ERROR_TIMEOUT 				7
+#define I2C_EV_DATA_REQ					8
+#define I2C_EV_DATA_RCV					9
 
 //Peripheral clock setup
 void I2C_PClk_Ctrl(I2C_RegDef_t *pGPIOx, uint8_t status);
@@ -231,6 +232,13 @@ void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer, uint32_t
 uint8_t I2C_MasterSendDataIntr(I2C_Handle_t *pI2CHandle,uint8_t *pTxBuffer, uint32_t len, uint8_t slaveAddr,uint8_t SR);
 uint8_t I2C_MasterReceiveDataIntr(I2C_Handle_t *pI2CHandle,uint8_t *pRxBuffer, uint32_t len, uint8_t slaveAddr,uint8_t SR);
 
+
+/*
+ * Data Send and Receive Polling based API SLAVE MODE
+ */
+void I2C_SlaveSendData(I2C_RegDef_t *pI2Cx, uint8_t data);
+uint8_t I2C_SlaveReceiveData(I2C_RegDef_t *pI2Cx);
+
 /*
  * IRQ configuration and ISR handling
  */
@@ -249,5 +257,5 @@ void I2C_CloseReceiveData(I2C_Handle_t *pI2CHandle);
  * I2C application callback
  */
 void I2C_ApplicationEventCallback(I2C_Handle_t *pI2CHandle, uint8_t evntVal);
-
+void I2C_SlaveEnableDisableCallbackEvents(I2C_RegDef_t *pI2Cx,uint8_t status);
 #endif /* INC_STM32F446XX_I2C_DRIVER_H_ */
