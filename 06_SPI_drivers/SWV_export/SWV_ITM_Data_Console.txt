@@ -1,0 +1,3 @@
+SWV ITM Data Console - ITM Port: 0
+Hello World!
+Rcvd data:nlolb
