@@ -55,14 +55,31 @@ typedef struct
 {
 	USART_RegDef_t 	*pUSARTx;
 	USART_Config_t 	USART_Config;
-	uint8_t 		txState;
-	uint8_t			rxState;
+
+	uint8_t 		*pTxBuffer;
+	uint8_t 		*pRxBuffer;
+
+	uint32_t		txLen;
+	uint32_t		rxLen;
+
+	uint8_t 		txBusyState;
+	uint8_t			rxBusyState;
 }USART_Handle_t;
 
 
 #define USART_READY							0
 #define USART_BUSY_RX						1
 #define USART_BUSY_TX						2
+
+
+#define 	USART_EVENT_TX_CMPLT   			0
+#define		USART_EVENT_RX_CMPLT   			1
+#define		USART_EVENT_IDLE      			2
+#define		USART_EVENT_CTS       			3
+#define		USART_EVENT_PE        			4
+#define		USART_ERR_FE     				5
+#define		USART_ERR_NE    	 			6
+#define		USART_ERR_ORE    				7
 
 /*
  * @USART_Mode
@@ -177,7 +194,7 @@ uint8_t USART_ReceiveDataIntr(USART_Handle_t *pUSARTHandle, uint8_t *pRxBuffer, 
  * IRQ Configuration and ISR handling
  */
 void USART_IRQConfig(uint8_t IRQPosition, bool status);
-void USART_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
+void USART_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);
 void USART_IRQHandling(USART_Handle_t *pHandle);
 
 /*

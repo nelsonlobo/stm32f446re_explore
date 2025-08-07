@@ -1,0 +1,57 @@
+SWV ITM Data Console - ITM Port: 0
+Application is running
+Transmitted : Ian is a small Baby!
+Transmission complete.
+Received: iAN IS A SMALL bABY
+Reception complete.
+---
+Transmitted : Hello, How are you ?
+Transmission complete.
+Received: hELLO, hOW ARE YOU 
+Reception complete.
+---
+Transmitted : Today is a Beautiful day!
+Transmission complete.
+Received: tODAY IS A bEAUTIFUL
+Reception complete.
+---
+Transmitted : Ian is a small Baby!
+Transmission complete.
+Received: iAN IS A SMALL bABY
+Reception complete.
+---
+Transmitted : Hello, How are you ?
+Transmission complete.
+Received: hELLO, hOW ARE YOU 
+Reception complete.
+---
+Transmitted : Today is a Beautiful day!
+Transmission complete.
+Received: tODAY IS A bEAUTIFUL
+Reception complete.
+---
+Transmitted : Ian is a small Baby!
+Transmission complete.
+Received: iAN IS A SMALL bABY
+Reception complete.
+---
+Transmitted : Hello, How are you ?
+Transmission complete.
+Received: hELLO, hOW ARE YOU 
+Reception complete.
+---
+Transmitted : Today is a Beautiful day!
+Transmission complete.
+Received: tODAY IS A bEAUTIFUL
+Reception complete.
+---
+Transmitted : Ian is a small Baby!
+Transmission complete.
+Received: iAN IS A SMALL bABY
+Reception complete.
+---
+Transmitted : Hello, How are you ?
+Transmission complete.
+Received: hELLO, hOW ARE YOU 
+Reception complete.
+---

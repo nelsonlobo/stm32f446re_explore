@@ -783,7 +783,7 @@ typedef struct
 #define USART_CR3_HDSEL			3
 #define USART_CR3_IRLP			2
 #define USART_CR3_IREN			1
-#define UASRT_CR3_EIE			0
+#define USART_CR3_EIE			0
 
 /*
  * Bit position definition for USART_GTPR register
