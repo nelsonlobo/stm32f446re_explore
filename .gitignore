@@ -3,6 +3,8 @@
 # Eclipse workspace metadata
 .metadata/
 /.metadata/
+.project
+*.cfg
 
 # Build output directories
 Debug/
@@ -33,3 +35,6 @@ workbench.xmi
 *.history/
 # If feedback.txt is genuinely not meant for version control
 feedback.txt
+
+# STM32CubeIDE specific
+SWV_export/

@@ -9,30 +9,11 @@
 #define INC_STM32F446XX_H_
 
 
-
+#include <stdio.h>
 #include <stdint.h>
-
-
-// --- Clock Configuration Selection Macros ---
-// Define ONE of these macros to select your desired system clock
-// If none are defined, a default basic configuration (e.g., HSI 16MHz) might be used or result in no clock setup.
-
-//#define SYSCLK_FREQ_HSI_8MHZ      // Option 1: Internal Oscillator (HSI) at 8MHz
-#define SYSCLK_FREQ_HSI_16MHZ      // Option 1: Internal Oscillator (HSI) at 16MHz
-//#define SYSCLK_FREQ_HSE_16MHZ   // Option 2: External Oscillator (HSE) at 16MHz
-//#define SYSCLK_FREQ_HSE_PLL_48MHZ // Option 3: External Oscillator (HSE) with PLL at 48MHz
-
-// --- HSE Bypass Mode Macro ---
-// Define this macro to enable HSE Bypass mode if you are providing an external clock signal
-// (e.g., from a signal generator) directly to the OSC_IN pin, instead of using a crystal.
-// If using a crystal, DO NOT define this macro.
-//#define HSE_BYPASS_MODE_ENABLE // Option 4: Enable HSE Bypass mode
-
-// --- Forward declaration for SystemClock_Config ---
-void SystemClock_Config(void);
-
-// Note: Ensure PWR_RegDef_t, FLASH_TypeDef, PWR, and FLASH macros are correctly defined in this header.
-// (You should have these from previous steps).
+#include <string.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 
 /*******************Start Processor specific details*************************/
@@ -326,42 +307,66 @@ typedef struct
 #define SYSCFG					((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
 
 
+/*
+ * Bit position definition for AHB1ENR to Enable the respective GPIOx peripheral
+ */
+#define GPIOA_EN_BIT			0
+#define GPIOB_EN_BIT			1
+#define GPIOC_EN_BIT			2
+#define GPIOD_EN_BIT			3
+#define GPIOE_EN_BIT			4
+#define GPIOF_EN_BIT			5
+#define GPIOG_EN_BIT			6
+#define GPIOH_EN_BIT			7
+
 
 /*
  * Peripheral Clock Enable macros for GPIOx registers
  */
 
-#define GPIOA_PCLK_EN()			(RCC->AHB1ENR|=(1<<0))
-#define GPIOB_PCLK_EN()			(RCC->AHB1ENR|=(1<<1))
-#define GPIOC_PCLK_EN()			(RCC->AHB1ENR|=(1<<2))
-#define GPIOD_PCLK_EN()			(RCC->AHB1ENR|=(1<<3))
-#define GPIOE_PCLK_EN()			(RCC->AHB1ENR|=(1<<4))
-#define GPIOF_PCLK_EN()			(RCC->AHB1ENR|=(1<<5))
-#define GPIOG_PCLK_EN()			(RCC->AHB1ENR|=(1<<6))
-#define GPIOH_PCLK_EN()			(RCC->AHB1ENR|=(1<<7))
+#define GPIOA_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOA_EN_BIT))
+#define GPIOB_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOB_EN_BIT))
+#define GPIOC_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOC_EN_BIT))
+#define GPIOD_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOD_EN_BIT))
+#define GPIOE_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOE_EN_BIT))
+#define GPIOF_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOF_EN_BIT))
+#define GPIOG_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOG_EN_BIT))
+#define GPIOH_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOH_EN_BIT))
 
 /*
  * Peripheral Clock Enable macros for GPIOx registers
  */
 
-#define GPIOA_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<0))
-#define GPIOB_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<1))
-#define GPIOC_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<2))
-#define GPIOD_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<3))
-#define GPIOE_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<4))
-#define GPIOF_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<5))
-#define GPIOG_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<6))
-#define GPIOH_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<7))
+#define GPIOA_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOA_EN_BIT))
+#define GPIOB_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOB_EN_BIT))
+#define GPIOC_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOC_EN_BIT))
+#define GPIOD_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOD_EN_BIT))
+#define GPIOE_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOE_EN_BIT))
+#define GPIOF_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOF_EN_BIT))
+#define GPIOG_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOG_EN_BIT))
+#define GPIOH_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOH_EN_BIT))
+
+/*
+ * Bit position definition for AHB1ENR to Enable the respective GPIOx peripheral
+ */
+#define GPIOA_RST_BIT			0
+#define GPIOB_RST_BIT			1
+#define GPIOC_RST_BIT			2
+#define GPIOD_RST_BIT			3
+#define GPIOE_RST_BIT			4
+#define GPIOF_RST_BIT			5
+#define GPIOG_RST_BIT			6
+#define GPIOH_RST_BIT			7
 
 //GPIO register RESET
-#define GPIOA_REG_RESET()		do{RCC->AHB1RSTR|=(1<<0);RCC->AHB1RSTR&=~(1<<0);}while(0)
-#define GPIOB_REG_RESET()		do{RCC->AHB1RSTR|=(1<<1);RCC->AHB1RSTR&=~(1<<1);}while(0)
-#define GPIOC_REG_RESET()		do{RCC->AHB1RSTR|=(1<<2);RCC->AHB1RSTR&=~(1<<2);}while(0)
-#define GPIOD_REG_RESET()		do{RCC->AHB1RSTR|=(1<<3);RCC->AHB1RSTR&=~(1<<3);}while(0)
-#define GPIOE_REG_RESET()		do{RCC->AHB1RSTR|=(1<<4);RCC->AHB1RSTR&=~(1<<4);}while(0)
-#define GPIOF_REG_RESET()		do{RCC->AHB1RSTR|=(1<<5);RCC->AHB1RSTR&=~(1<<5);}while(0)
-#define GPIOG_REG_RESET()		do{RCC->AHB1RSTR|=(1<<6);RCC->AHB1RSTR&=~(1<<6);}while(0)
-#define GPIOH_REG_RESET()		do{RCC->AHB1RSTR|=(1<<7);RCC->AHB1RSTR&=~(1<<7);}while(0)
+#define GPIOA_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOA_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOA_RST_BIT);}while(0)
+#define GPIOB_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOB_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOB_RST_BIT);}while(0)
+#define GPIOC_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOC_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOC_RST_BIT);}while(0)
+#define GPIOD_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOD_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOD_RST_BIT);}while(0)
+#define GPIOE_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOE_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOE_RST_BIT);}while(0)
+#define GPIOF_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOF_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOF_RST_BIT);}while(0)
+#define GPIOG_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOG_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOG_RST_BIT);}while(0)
+#define GPIOH_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOH_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOH_RST_BIT);}while(0)
 
 
 /*
@@ -419,32 +424,6 @@ typedef struct
 										(x == GPIOG)? 6:\
 										(x == GPIOH)? 7:0)
 
-
-/*
- * Peripheral Clock Enable macros for SPIx registers
- */
-#define SPI1_PCLK_EN()			(RCC->APB2ENR|=(1<<12))
-#define SPI2_PCLK_EN()			(RCC->APB1ENR|=(1<<14))
-#define SPI3_PCLK_EN()			(RCC->APB1ENR|=(1<<15))
-#define SPI4_PCLK_EN()			(RCC->APB2ENR|=(1<<13))
-
-/*
- * Peripheral Clock Enable macros for SPIx registers
- */
-#define SPI1_PCLK_DIS()			(RCC->APB2ENR &=~(1<<12))
-#define SPI2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<14))
-#define SPI3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<15))
-#define SPI4_PCLK_DIS()			(RCC->APB2ENR &=~(1<<13))
-
-/*
- * Register Reset macros for SPIx registers
- */
-#define SPI1_REG_RESET()		do{RCC->APB2RSTR|=(1<<12);RCC->APB2RSTR&=~(1<<12);}while(0)
-#define SPI2_REG_RESET()		do{RCC->APB1RSTR|=(1<<14);RCC->APB1RSTR&=~(1<<14);}while(0)
-#define SPI3_REG_RESET()		do{RCC->APB1RSTR|=(1<<15);RCC->APB1RSTR&=~(1<<15);}while(0)
-#define SPI4_REG_RESET()		do{RCC->APB2RSTR|=(1<<13);RCC->APB2RSTR&=~(1<<13);}while(0)
-
-
 /*
  * SPI Register definition
  */
@@ -466,20 +445,235 @@ typedef struct
 #define SPI3					((SPI_RegDef_t*)SPI3_BASEADDR)
 #define SPI4					((SPI_RegDef_t*)SPI4_BASEADDR)
 
+/*
+ * Bit position definitions of SPI CR1 register
+ */
+#define SPI_CR1_CPHA			0
+#define SPI_CR1_CPOL			1
+#define SPI_CR1_MSTR			2
+#define SPI_CR1_BR				3
+#define SPI_CR1_SPE				6
+#define SPI_CR1_LSB_FIRST		7
+#define SPI_CR1_SSI				8
+#define SPI_CR1_SSM				9
+#define SPI_CR1_RXONLY			10
+#define SPI_CR1_DFF				11
+#define SPI_CR1_CRCNEXT			12
+#define SPI_CR1_CRCEN			13
+#define SPI_CR1_BIDIOE			14
+#define SPI_CR1_BIDIMODE		15
+
+
+/*
+ * Bit position definitions of SPI CR2 register
+ */
+#define SPI_CR2_RXDMAEN			0
+#define SPI_CR2_TXDMAEN			1
+#define SPI_CR2_SSOE			2
+#define SPI_CR2_FRF				4
+#define SPI_CR2_ERRIE			5
+#define SPI_CR2_RXNEIE			6
+#define SPI_CR2_TXEIE			7
+
+
+/*
+ * Bit position definitions for SPI_SR register
+ */
+#define SPI_SR_RXNE				0
+#define SPI_SR_TXE				1
+#define SPI_SR_CHSIDE			2
+#define SPI_SR_UDR				3
+#define SPI_SR_CRCERR			4
+#define SPI_SR_MODF				5
+#define SPI_SR_OVR				6
+#define SPI_SR_BSY				7
+#define SPI_SR_FRE				8
+
+/*
+ * Bit position definition for APBxENR to Enable the respective I2Cx peripheral
+ */
+#define SPI1_EN_BIT				12
+#define SPI2_EN_BIT				14
+#define SPI3_EN_BIT				15
+#define SPI4_EN_BIT				13
+
+/*
+ * Peripheral Clock Enable macros for SPIx registers
+ */
+#define SPI1_PCLK_EN()			(RCC->APB2ENR|=(1<<SPI1_EN_BIT))
+#define SPI2_PCLK_EN()			(RCC->APB1ENR|=(1<<SPI2_EN_BIT))
+#define SPI3_PCLK_EN()			(RCC->APB1ENR|=(1<<SPI3_EN_BIT))
+#define SPI4_PCLK_EN()			(RCC->APB2ENR|=(1<<SPI4_EN_BIT))
+
+/*
+ * Peripheral Clock Enable macros for SPIx registers
+ */
+#define SPI1_PCLK_DIS()			(RCC->APB2ENR &=~(1<<SPI1_EN_BIT))
+#define SPI2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<SPI2_EN_BIT))
+#define SPI3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<SPI3_EN_BIT))
+#define SPI4_PCLK_DIS()			(RCC->APB2ENR &=~(1<<SPI4_EN_BIT))
+
+/*
+ * Bit position definition for APBxRSTR to Reset the respective I2Cx peripheral
+ */
+#define SPI1_RST_BIT			12
+#define SPI2_RST_BIT			14
+#define SPI3_RST_BIT			15
+#define SPI4_RST_BIT			13
+
+/*
+ * Register Reset macros for SPIx registers
+ */
+#define SPI1_REG_RESET()		do{RCC->APB2RSTR|=(1<<SPI1_RST_BIT);RCC->APB2RSTR&=~(1<<SPI1_RST_BIT);}while(0)
+#define SPI2_REG_RESET()		do{RCC->APB1RSTR|=(1<<SPI2_RST_BIT);RCC->APB1RSTR&=~(1<<SPI2_RST_BIT);}while(0)
+#define SPI3_REG_RESET()		do{RCC->APB1RSTR|=(1<<SPI3_RST_BIT);RCC->APB1RSTR&=~(1<<SPI3_RST_BIT);}while(0)
+#define SPI4_REG_RESET()		do{RCC->APB2RSTR|=(1<<SPI4_RST_BIT);RCC->APB2RSTR&=~(1<<SPI4_RST_BIT);}while(0)
+
+
+/*
+ * I2C Register definition
+ */
+typedef struct
+{
+	volatile uint32_t CR1;		//0x00
+	volatile uint32_t CR2;		//0x04
+	volatile uint32_t OAR1;		//0x08
+	volatile uint32_t OAR2;		//0x0C
+	volatile uint32_t DR;		//0x10
+	volatile uint32_t SR1;		//0x14
+	volatile uint32_t SR2;		//0x18
+	volatile uint32_t CCR;		//0x1C
+	volatile uint32_t TRISE;	//0x20
+	volatile uint32_t FLTR;		//0x24
+}I2C_RegDef_t;
+
+#define I2C1					((I2C_RegDef_t*)I2C1_BASEADDR)
+#define I2C2					((I2C_RegDef_t*)I2C2_BASEADDR)
+#define I2C3					((I2C_RegDef_t*)I2C3_BASEADDR)
+
+/*
+ * Bit position definition for I2C_CR1
+ */
+#define I2C_CR1_PE				0
+#define I2C_CR1_SMBUS			1
+//Reserved
+#define I2C_CR1_SMBTYPE			3
+#define I2C_CR1_ENARP			4
+#define I2C_CR1_ENPEC			5
+#define I2C_CR1_ENGC			6
+#define I2C_CR1_NOSTRETCH		7
+#define I2C_CR1_START			8
+#define I2C_CR1_STOP			9
+#define I2C_CR1_ACK				10
+#define I2C_CR1_POS				11
+#define I2C_CR1_PEC				12
+#define I2C_CR1_ALERT			13
+//Reserved
+#define I2C_CR1_SWRST			15
+
+
+/*
+ * Bit position definition for I2C_CR2
+ */
+#define I2C_CR2_FREQ			0
+//Reserved
+//Reserved
+#define I2C_CR2_ITERREN			8
+#define I2C_CR2_ITEVTEN			9
+#define I2C_CR2_ITBUFEN			10
+#define I2C_CR2_DMAEN			11
+#define I2C_CR2_LAST			12
+
+/*
+ * Bit position definition for I2C_OAR1
+ */
+#define I2C_OAR1_ADD0			0
+#define I2C_OAR1_ADD7_1			1
+#define I2C_OAR1_ADD9_8			8
+#define I2C_OAR1_ADDMODE		15
+
+
+/*
+ * Bit position definition for I2C_OAR2
+ */
+#define I2C_OAR2_ENDUAL			0
+#define I2C_OAR2_ADD2_7_1		1
+
+
+/*
+ * Bit position definition for I2C_SR1
+ */
+#define I2C_SR1_SB				0
+#define I2C_SR1_ADDR			1
+#define I2C_SR1_BTF				2
+#define I2C_SR1_ADD10			3
+#define	I2C_SR1_STOPF			4
+//reserved
+#define I2C_SR1_RXNE			6
+#define I2C_SR1_TXE				7
+#define I2C_SR1_BERR			8
+#define I2C_SR1_ARLO			9
+#define I2C_SR1_AF				10
+#define I2C_SR1_OVR				11
+#define I2C_SR1_PECERR			12
+//reserved
+#define I2C_SR1_TIMEOUT			14
+#define I2C_SR1_SMBALERT		15
+
+
+/*
+ * Bit position definition for I2C_SR2
+ */
+#define I2C_SR2_MSL				0
+#define I2C_SR2_BUSY			1
+#define I2C_SR2_TRA				2
+//Reserved
+#define	I2C_SR2_GENCALL			4
+#define I2C_SR2_SMBDEFAULT		5
+#define	I2C_SR2_SMBHOST			6
+#define I2C_SR2_DUALF			7
+#define I2C_PEC_7_0				8
+
+
+/*
+ * Bit position definition for I2C_CCR
+ */
+#define I2C_CCR_11_0			0
+#define I2C_CCR_DUTY			14
+#define I2C_CCR_FS				15
+
+
+/*
+ * Bit position definition for ABP1ENR to Enable the respective I2Cx peripheral
+ */
+#define I2C1_EN_BIT				21
+#define I2C2_EN_BIT				22
+#define I2C3_EN_BIT				23
 
 /*
  * Peripheral Clock Enable macros for I2Cx registers
  */
-#define I2C1_PCLK_EN()			(RCC->APB1ENR|=(1<<21))
-#define I2C2_PCLK_EN()			(RCC->APB1ENR|=(1<<22))
-#define I2C3_PCLK_EN()			(RCC->APB1ENR|=(1<<23))
+#define I2C1_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C1_EN_BIT))
+#define I2C2_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C2_EN_BIT))
+#define I2C3_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C3_EN_BIT))
 
 /*
  * Peripheral Clock Enable macros for I2Cx registers
  */
-#define I2C1_PCLK_DIS()			(RCC->APB1ENR &=~(1<<21))
-#define I2C2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<22))
-#define I2C3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<23))
+#define I2C1_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C1_EN_BIT))
+#define I2C2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C2_EN_BIT))
+#define I2C3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C3_EN_BIT))
+
+/*
+ * Bit position definition for AHB1RSTR to Reset the respective I2Cx peripheral
+ */
+#define I2C1_RST_BIT			21
+#define I2C2_RST_BIT			22
+#define I2C3_RST_BIT			23
+
+#define I2C1_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C1_RST_BIT);RCC->AHB1RSTR&=~(1<<I2C1_RST_BIT);}while(0)
+#define I2C2_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C2_RST_BIT);RCC->AHB1RSTR&=~(1<<I2C2_RST_BIT);}while(0)
+#define I2C3_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C3_RST_BIT);RCC->AHB1RSTR&=~(1<<I2C3_RST_BIT);}while(0)
 
 
 /*
@@ -523,6 +717,14 @@ typedef struct
 #define IRQN_SPI3				51
 #define IRQN_SPI4				84
 
+//I2C related IRQ positions
+#define	IRQ_I2CEV_1				31
+#define	IRQ_I2CER_1				32
+#define	IRQ_I2CEV_2				33
+#define	IRQ_I2CER_2				34
+#define	IRQ_I2CEV_3				72
+#define	IRQ_I2CER_3				73
+
 #define NVIC_IRQ_PRIO0			0
 #define NVIC_IRQ_PRIO1			1
 #define NVIC_IRQ_PRIO2			2
@@ -544,16 +746,20 @@ typedef struct
 
 #define ENABLE					1
 #define DISABLE					0
+
 #define SET						ENABLE
 #define CLEAR					DISABLE
+
 #define GPIO_PIN_SET			SET
 #define GPIO_PIN_CLEAR			CLEAR
-#define FLAG_CLEAR				CLEAR
+
 #define FLAG_SET				SET
+#define FLAG_CLEAR				CLEAR
 
 
 #include "stm32f446xx_gpio_driver.h"
-#include "stm32f446xx_spi_driver.h"
+#include "stm32f446xx_i2c_driver.h"
+#include <stm32f446xx_xtal_driver.h>
 
 #endif /* INC_STM32F446XX_H_ */
 

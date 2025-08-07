@@ -53,6 +53,9 @@ extern void initialise_monitor_handles();
 #define ANALOG_PIN2   2
 #define ANALOG_PIN3   3
 #define ANALOG_PIN4   4
+
+
+//Local function declaration
 void SPI_GPIO_Init(void);
 void SPI1_Configurations(void);
 void btn_GPIO_Init(void);
@@ -201,7 +204,7 @@ int main(void)
 		//4. CMD_PRINT 		<len(2)>  <message(len) >
 
 		//wait till button is pressed
-		while( ! GPIO_ReadFromInputPin(GPIOC,GPIO_PIN_NUM13) );
+		while(GPIO_ReadFromInputPin(GPIOC,GPIO_PIN_NUM13) );
 
 		//to avoid button de-bouncing related issues 200ms of delay
 		delay();
@@ -245,7 +248,7 @@ int main(void)
 
 		//5. CMD_ID_READ
 		//wait till button is pressed
-		while( ! GPIO_ReadFromInputPin(GPIOC,GPIO_PIN_NUM13) );
+		while( GPIO_ReadFromInputPin(GPIOC,GPIO_PIN_NUM13) );
 
 		//to avoid button de-bouncing related issues 200ms of delay
 		delay();
