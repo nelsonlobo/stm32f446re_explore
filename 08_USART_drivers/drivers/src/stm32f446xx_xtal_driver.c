@@ -13,57 +13,59 @@ uint16_t APB2Prescalar[4] = {2,4,8,16};
 
 uint32_t RCC_GetPClk1Value(void)
 {
-	uint32_t pclk1,SystemClk;
-	uint8_t clkSrc,temp,ahbp,apb1p;
-	clkSrc = ((RCC->CFGR>>RCC_CFGR_SWS_BIT) & 0x3);
+    uint32_t pclk1, SystemClk;
+    uint8_t clkSrc, temp, ahbp;
+    uint8_t apb1p;
 
-	if(clkSrc==0)
-	{
-		SystemClk = 16000000;
-	}
-	else if(clkSrc==1)
-	{
-		SystemClk = 8000000;
-	}
-	else if(clkSrc ==2)
-	{
-//		SystemClk = RCC_GetPllOutputClock();
-	}
+    clkSrc = ((RCC->CFGR >> RCC_CFGR_SWS) & 0x3);
 
+    if (clkSrc == 0) {
+        // HSI is SYSCLK source. HSI is 16MHz.
+        // We must check HPRE to find the HCLK value.
+        SystemClk = HSI_VALUE;
+    }
+    else if (clkSrc == 1)
+    {
+        // HSE is SYSCLK source. Assuming 8MHz HSE.
+        SystemClk = HSE_VALUE;
+    }
+    else if (clkSrc == 2)
+    {
+        // PLL is SYSCLK source.
+        SystemClk = RCC_GetPllOutputClock();
+    }
 
-	/*
-	 * Fetch the value for HPRE in RCC's CFGR register
-	 * which indicates the prescalar used for AHB
-	 * where bits 4-7 are configured
-	 */
-	temp = ((RCC->CFGR >>RCC_CFGR_HPRE_BIT)&0xF);
-	if(temp<8)
-	{
-		ahbp = 1;
-	}
-	else
-	{
-		ahbp = AHBPrescalar[temp-8];
-	}
+    // Read AHB prescaler (HPRE bits 4-7)
+    temp = ((RCC->CFGR >> RCC_CFGR_HPRE) & 0xF);
+    if (temp < 8)
+    {
+        ahbp = 1; // Division by 1
+    }
+    else
+    {
+        ahbp = AHBPrescalar[temp - 8]; // Division by 2, 4, 8, etc.
+    }
 
-	/*
-	 * Fetch the value for HPRE in RCC's CFGR register
-	 * which indicates the prescalar used for APB1 Low speed prescalar
-	 * where bits 10-12 are configured
-	 */
-	temp = ((RCC->CFGR >>RCC_CFGR_PPRE1_BIT)&0x7);
-	if(temp<4)
-	{
-		apb1p = 1;
-	}
-	else
-	{
-		ahbp = APB1Prescalar[temp-4];
-	}
+    // Divide SystemClk by AHB prescaler to get HCLK
+    SystemClk /= ahbp;
 
-	pclk1 = (SystemClk/ahbp)/apb1p;
+    // Read APB1 prescaler (PPRE1 bits 10-12)
+    temp = ((RCC->CFGR >> RCC_CFGR_PPRE1) & 0x7);
+    if (temp < 4)
+    {
+        apb1p = 1;
+    }
+    else
+    {
+        apb1p = APB1Prescalar[temp - 4];
+    }
 
-	return pclk1;
+    // Divide HCLK by APB1 prescaler to get PCLK1
+    pclk1 = SystemClk / apb1p;
+
+    //Divide by 2 since PCLK1 is interfaced with APB1 which will always
+    //Operate at half the system clock
+    return pclk1;
 }
 
 
@@ -73,20 +75,24 @@ uint32_t RCC_GetPClk2Value(void)
 	uint8_t clkSrc,temp,ahbp,apb2p;
 
 	//1. Identify the clock source
-	clkSrc = ((RCC->CFGR>>RCC_CFGR_SWS_BIT) & 0x3);
+	clkSrc = ((RCC->CFGR>>RCC_CFGR_SWS) & 0x3);
 
-	if(clkSrc==0)
-	{
-		SystemClk = 16000000;
-	}
-	else if(clkSrc==1)
-	{
-		SystemClk = 8000000;
-	}
-	else if(clkSrc ==2)
-	{
-//		SystemClk = RCC_GetPllOutputClock();
-	}
+    if (clkSrc == 0)
+    {
+        // HSI is SYSCLK source. HSI is 16MHz.
+        // We must check HPRE to find the HCLK value.
+        SystemClk = HSI_VALUE;
+    }
+    else if (clkSrc == 1)
+    {
+        // HSE is SYSCLK source. Assuming 8MHz HSE.
+        SystemClk = HSE_VALUE;
+    }
+    else if (clkSrc == 2)
+    {
+        // PLL is SYSCLK source.
+        SystemClk = RCC_GetPllOutputClock();
+    }
 
 
 	/*
@@ -94,7 +100,7 @@ uint32_t RCC_GetPClk2Value(void)
 	 * which indicates the prescalar used for AHB
 	 * where bits 4-7 are configured
 	 */
-	temp = ((RCC->CFGR >>RCC_CFGR_HPRE_BIT)&0xF);
+	temp = ((RCC->CFGR >>RCC_CFGR_HPRE)&0xF);
 	if(temp<8)
 	{
 		ahbp = 1;
@@ -104,12 +110,15 @@ uint32_t RCC_GetPClk2Value(void)
 		ahbp = AHBPrescalar[temp-8];
 	}
 
+    // Divide SystemClk by AHB prescaler to get HCLK
+    SystemClk /= ahbp;
+
 	/*
 	 * Fetch the value for HPRE in RCC's CFGR register
 	 * which indicates the prescalar used for APB1 Low speed prescalar
 	 * where bits 10-12 are configured
 	 */
-	temp = ((RCC->CFGR >>RCC_CFGR_PPRE2_BIT)&0x7);
+	temp = ((RCC->CFGR >>RCC_CFGR_PPRE2)&0x7);
 	if(temp<4)
 	{
 		apb2p = 1;
@@ -119,7 +128,7 @@ uint32_t RCC_GetPClk2Value(void)
 		ahbp = APB2Prescalar[temp-4];
 	}
 
-	pclk2 = (SystemClk/ahbp)/apb2p;
+	pclk2 = SystemClk / apb2p;
 
 	return pclk2;
 }
@@ -135,169 +144,157 @@ uint32_t RCC_GetPClk2Value(void)
  * Flash latency (FLASH->ACR) are correctly set PRIOR to switching the system clock.
  * The commented-out PLL_48MHZ section shows an example for this.
  */
-
 void SystemClock_Config(void)
 {
-    // 1. Enable Power Control clock (always good to do early)
-    RCC->APB1ENR |= (1U << 28); // PWR_CLK_ENABLE() (Bit 28 for PWR in APB1ENR)
-    // 2. Configure the main internal regulator output voltage (essential for higher frequencies)
-    PWR->CR |= PWR_REGULATOR_VOLTAGE_SCALE3; // Setting VOS[1:0] to 01 for Scale 3 (1.2V)
+    // 1. Enable Power Control clock
+    RCC->APB1ENR |= (1U << RCC_APB1ENR_PWREN);
+    // 2. Configure the main internal regulator output voltage
+//    PWR->CR |= PWR_REGULATOR_VOLTAGE_SCALE3;
 
-#if defined(SYSCLK_FREQ_HSI_8MHZ) || defined(SYSCLK_FREQ_HSI_16MHZ)
 
-    // --- Option 1: Internal Oscillator (HSI) at 8MHz ---
+    RCC->CR &= ~(1<<RCC_CR_HSEBYP);
+#ifdef HSE_BYPASS_MODE_ENABLE
+    RCC->CR |= (1<<RCC_CR_HSEBYP);
+#endif
+
+#if defined(SYSCLK_FREQ_HSI_8MHZ)
+    // --- Internal Oscillator (HSI) at 8MHz ---
     // HSI = 16MHz. HCLK = 8MHz. PCLK1/PCLK2 = 8MHz.
-    // This is a very safe and simple configuration.
+    RCC->CR |= (1<<RCC_CR_HSION); // Enable HSI
+    while (!(RCC->CR & (1U << RCC_CR_HSIRDY))){} // Wait for HSI to be ready
 
-    // Enable HSI (Internal High-Speed oscillator)
-    RCC->CR |= (1U << 0); // HSION bit (Bit 0)
-    while (!(RCC->CR & (1U << 1))); // Wait for HSIRDY bit (Bit 1)
+	// Configure Flash Latency for 8MHz HCLK
+	FLASH->ACR &= ~(0xF << FLASH_ACR_LATENCY);
 
-    // Configure Flash Latency (for 8MHz HCLK, 0 wait states is correct)
-    FLASH->ACR &= ~(0xF << 0); // Clear LATENCY bits (Bits 3:0)
-    FLASH->ACR |= (0x0 << 0);  // Set 0 wait states
+    RCC->CR &= ~(1U << RCC_CR_PLLON);
+    while ((RCC->CR & (1U << RCC_CR_PLLRDY)));
 
     // Configure AHB and APB bus prescalers
     RCC->CFGR = 0x00000000U; // Clear CFGR register
+    RCC->CFGR |= (0x8U << RCC_CFGR_HPRE); 	// HPRE = /2 -> 16MHz / 2 = 8MHz
+    RCC->CFGR |= (0x0U << RCC_CFGR_PPRE1); 	// PPRE1 = /1
+    RCC->CFGR |= (0x0U << RCC_CFGR_PPRE2); 	// PPRE2 = /1
 
-    // Set AHB prescaler (HPRE) to divide by 2 (HCLK = SYSCLK / 2) -> 16MHz / 2 = 8MHz
-    RCC->CFGR |= (0x8U << 4); // HPRE = /2 (binary 1000)
+    // Select HSI as the system clock source
+    RCC->CFGR &= ~(0x3U << RCC_CFGR_SW); // Clear SW bits
+    RCC->CFGR |= (0x0U << RCC_CFGR_SW);  // Select HSI (binary 00)
+    while (!((RCC->CFGR & (0x3U << RCC_CFGR_SWS)) == (0))); // Wait for SWS bits to show HSI
 
-    // Set APB1 prescaler (PPRE1) to divide by 1 (PCLK1 = HCLK / 1 = 8MHz)
-    RCC->CFGR |= (0x0U << 10); // PPRE1 = /1
+#elif defined(SYSCLK_FREQ_HSE_8MHZ)
+    // --- External Oscillator (HSE) at 8MHz ---
+    // HCLK = 8MHz. PCLK1/PCLK2 = 8MHz.
 
-    // Set APB2 prescaler (PPRE2) to divide by 1 (PCLK2 = HCLK / 1 = 8MHz)
-    RCC->CFGR |= (0x0U << 13); // PPRE2 = /1
+    RCC->CR &= ~(1U << RCC_CR_HSEON);
+    RCC->CR |= (1U << RCC_CR_HSEON); // HSEON bit
+    while (!(RCC->CR & (1U << RCC_CR_HSERDY))); // Wait for HSERDY
 
-    // Select HSI as the system clock source (SW[1:0] bits 0-1)
-    RCC->CFGR &= ~(0x3U << 0); // Clear SW bits
-    RCC->CFGR |= (0x0U << 0);  // Select HSI as SYSCLK source (binary 00)
+    // Configure Flash Latency for 8MHz HCLK
+    FLASH->ACR &= ~(0xF << FLASH_ACR_LATENCY);
+//    FLASH->ACR |= FLASH_ACR_LATENCY_0WS; // 0 wait states for 8MHz
 
-    // Wait for SYSCLK to switch to HSI (SWS[1:0] bits 2-3)
-    while (!((RCC->CFGR & (0x3U << 2)) == (0x0U << 2))); // Wait for SWS bits to show HSI
-#endif
-
-#ifdef SYSCLK_FREQ_HSI_8MHZ
-    // HCLK = 16MHz / 2 = 8MHz
-    RCC->CFGR |= (0x8U << 4); // HPRE = /2 (binary 1000)
-#elif defined(SYSCLK_FREQ_HSI_16MHZ)
-    // HCLK = 16MHz / 1 = 16MHz
-    RCC->CFGR |= (0x0U << 4); // HPRE = /1 (binary 0000)
-#elif defined(SYSCLK_FREQ_HSE_16MHZ)
-    // --- Option 2: External Oscillator (HSE) at 16MHz ---
-    // HCLK = 16MHz. PCLK1/PCLK2 = 16MHz. Requires a 16MHz crystal.
-
-    // 1. Enable HSE (High-Speed External) oscillator
-    RCC->CR &= ~(1U << 16); // Clear HSEON bit
-#ifdef HSE_BYPASS_MODE_ENABLE
-    // If using external clock signal (not crystal), set bypass mode
-    RCC->CR |= (1U << 18); // HSEBYP bit (Bit 18)
-#else
-    // If using a crystal, ensure bypass is cleared
-    RCC->CR &= ~(1U << 18); // HSEBYP bit (Bit 18)
-#endif
-    RCC->CR |= (1U << 16); // HSEON bit (Enable HSE)
-    while (!(RCC->CR & (1U << 17))); // Wait for HSERDY bit (Bit 17)
-
-    // 2. Configure Flash Latency (for 16MHz HCLK, 0 wait states is correct)
-    FLASH->ACR &= ~(0xF << 0); // Clear LATENCY bits
-    FLASH->ACR |= (0x0 << 0);  // Set 0 wait states
-
-    // 3. Configure AHB and APB bus prescalers
+    // Configure AHB and APB bus prescalers
     RCC->CFGR = 0x00000000U; // Clear CFGR register
+    RCC->CFGR |= (0x0U << RCC_CFGR_HPRE); // HPRE = /1 -> 8MHz / 1 = 8MHz
+    RCC->CFGR |= (0x0U << RCC_CFGR_PPRE1); // PPRE1 = /1
+    RCC->CFGR |= (0x0U << RCC_CFGR_PPRE2); // PPRE2 = /1
 
-    // Set AHB prescaler (HPRE) to divide by 1 (HCLK = SYSCLK / 1 = 16MHz)
-    RCC->CFGR |= (0x0U << 4); // HPRE = /1
-
-    // Set APB1 prescaler (PPRE1) to divide by 1 (PCLK1 = HCLK / 1 = 16MHz)
-    RCC->CFGR |= (0x0U << 10); // PPRE1 = /1
-
-    // Set APB2 prescaler (PPRE2) to divide by 1 (PCLK2 = HCLK / 1 = 16MHz)
-    RCC->CFGR |= (0x0U << 13); // PPRE2 = /1
-
-    // 4. Select HSE as the system clock source (SW[1:0] bits 0-1)
-    RCC->CFGR &= ~(0x3U << 0); // Clear SW bits
-    RCC->CFGR |= (0x1U << 0);  // Select HSE as SYSCLK source (binary 01)
-
-    // 5. Wait for SYSCLK to switch to HSE (SWS[1:0] bits 2-3)
-    while (!((RCC->CFGR & (0x3U << 2)) == (0x1U << 2))); // Wait for SWS bits to show HSE
+    // Select HSE as the system clock source
+    RCC->CFGR &= ~(0x3U << RCC_CFGR_SW);
+    RCC->CFGR |= (0x1U << RCC_CFGR_SW);  // Select HSE (binary 01)
+    while (!((RCC->CFGR & (0x3U << RCC_CFGR_SWS)) == (0x1U << 2))); // Wait for SWS bits to show HSE
 
 #elif defined(SYSCLK_FREQ_HSE_PLL_48MHZ)
-    // --- Option 3: External Oscillator (HSE) with PLL at 48MHz ---
-    // HCLK = 48MHz. PCLK1 = 24MHz. PCLK2 = 48MHz. Requires a 16MHz crystal.
-    // For higher frequencies, voltage scaling and flash latency are crucial.
+    // --- External Oscillator (HSE) with PLL at 48MHz ---
+    // HCLK = 48MHz. PCLK1 = 24MHz. PCLK2 = 48MHz. Requires an 8MHz crystal.
 
-    // 1. Start HSE (High-Speed External) oscillator
-    RCC->CR &= ~(1U << 16); // Clear HSEON bit
-#ifdef HSE_BYPASS_MODE_ENABLE
-    RCC->CR |= (1U << 18); // HSEBYP bit
+    // 1. Set Flash Latency FIRST (crucial for stability)
+    FLASH->ACR &= ~(0xF << FLASH_ACR_LATENCY);
+    FLASH->ACR |= (0x1 << FLASH_ACR_LATENCY);
+
+    // 2. Start HSE
+    RCC->CR &= ~(1U << RCC_CR_HSEON);
+    RCC->CR |= (1U << RCC_CR_HSEON);
+    while (!(RCC->CR & (1U << RCC_CR_HSERDY)));
+
+    // 3. Configure PLL: Ensure PLL is OFF
+    RCC->CR &= ~(1U << RCC_CR_PLLON);
+    while ((RCC->CR & (1U << RCC_CR_PLLRDY)));
+
+    // 4. Configure PLLCFGR for 8MHz HSE
+    // HSE = 8MHz, target SYSCLK = 48MHz
+    // PLLM = 4 (8MHz / 4 = 2MHz PLL input)
+    // PLLN = 96 (2MHz * 96 = 192MHz VCO output)
+    // PLLP = DIV4 (192MHz / 4 = 48MHz SYSCLK)
+    RCC->PLLCFGR = 0x00000000U;
+    RCC->PLLCFGR |= (1U  << RCC_PLLCFGR_PLLSRC); // PLLSRC bit set for HSE source
+    RCC->PLLCFGR |= (4U  << RCC_PLLCFGR_PLLM);  // PLLM = 4
+    RCC->PLLCFGR |= (96U << RCC_PLLCFGR_PLLN); // PLLN = 96
+    RCC->PLLCFGR |= (1U  << RCC_PLLCFGR_PLLP); // PLLP = DIV4 (0b01)
+
+    // 5. Enable PLL
+    RCC->CR |= (1U << RCC_CR_PLLON);
+    while (!(RCC->CR & (1U << RCC_CR_PLLRDY)));
+
+    // 6. Configure AHB and APB bus prescalers for 48MHz HCLK
+    RCC->CFGR &= ~(0xF << RCC_CFGR_HPRE);
+    RCC->CFGR |= (0x0U << RCC_CFGR_HPRE); // HPRE = /1
+    RCC->CFGR &= ~(0x7 << RCC_CFGR_PPRE1);
+    RCC->CFGR |= (0x4U << RCC_CFGR_PPRE1); // PPRE1 = /2 (PCLK1 = 24MHz)
+    RCC->CFGR &= ~(0x7 << RCC_CFGR_PPRE2);
+    RCC->CFGR |= (0x0U << RCC_CFGR_PPRE2); // PPRE2 = /1 (PCLK2 = 48MHz)
+
+    // 7. Select PLLCLK as SYSCLK source
+    RCC->CFGR &= ~(0x3U << RCC_CFGR_SW);
+    RCC->CFGR |= (0x2U <<  RCC_CFGR_SW);
+    while (!((RCC->CFGR & (0x3U << RCC_CFGR_SWS)) == (0x2U << 2)));
+
 #else
-    RCC->CR &= ~(1U << 18); // HSEBYP bit
+    // Default fallback to HSI 16MHz if no macro is defined.
+    RCC->CR |= (1<<RCC_CR_HSION);
+    while (!(RCC->CR & (1U << RCC_CR_HSIRDY)));
+    RCC->CFGR = 0x00000000U;
+    FLASH->ACR &= ~(0xF << FLASH_ACR_LATENCY);
 #endif
-    RCC->CR |= (1U << 16); // HSEON bit (Enable HSE)
-    while (!(RCC->CR & (1U << 17))); // Wait for HSERDY bit
-
-    // 2. Configure PLL: Ensure PLL is OFF before reconfiguring
-    RCC->CR &= ~(1U << 24); // Clear PLLON bit
-    // Optional: Add a small delay to ensure PLL is fully off if it was previously on
-    // for(volatile uint32_t i=0; i<100; i++);
-
-    // 3. Clear and configure PLLCFGR with new values
-    // HSE = 16MHz, target SYSCLK = 48MHz
-    // PLLM = 8 (16MHz / 8 = 2MHz PLL input, within 1-2MHz range)
-    // PLLN = 192 (2MHz * 192 = 384MHz VCO output, within 100-432MHz range)
-    // PLLP = DIV8 (384MHz / 8 = 48MHz SYSCLK)
-    // PLLQ = 2 (common for USB)
-    // PLLR = 2 (common for audio/SPDIF)
-
-    RCC->PLLCFGR = 0x00000000U; // Clear for fresh configuration
-    RCC->PLLCFGR |= (1U << 22); // PLLSRC bit (bit 22) set for HSE source
-    RCC->PLLCFGR |= (8U << 0);         // PLLM = 8 (bits 5:0)
-    RCC->PLLCFGR |= (192U << 6);       // PLLN = 192 (bits 14:6)
-    RCC->PLLCFGR |= (3U << 16);        // PLLP = DIV8 (bits 17:16 set to 11 for /8)
-                                        // RCC_PLLP_DIV8 is (3U << 16)
-    RCC->PLLCFGR |= (2U << 24);        // PLLQ = 2 (bits 27:24)
-    RCC->PLLCFGR |= (2U << 28);        // PLLR = 2 (bits 31:28)
-
-    // 4. Enable PLL
-    RCC->CR |= (1U << 24); // PLLON bit (Enable PLL)
-
-    // 5. Wait for PLL to be ready
-    while (!(RCC->CR & (1U << 25))); // PLLRDY bit (Bit 25)
-
-    // 6. Set Flash Latency for 48MHz HCLK
-    // For 48MHz HCLK, 1 wait state (0x1) is typically required for VCORE Scale 3.
-    FLASH->ACR &= ~(0xF << 0); // Clear LATENCY bits
-    FLASH->ACR |= (0x1 << 0);  // Set 1 wait state
-
-    // 7. Configure AHB and APB bus prescalers for 48MHz HCLK
-    RCC->CFGR &= ~(0xF << 4); // Clear HPRE bits
-    RCC->CFGR |= (0x0U << 4); // HPRE = /1 (HCLK = SYSCLK / 1 = 48MHz)
-
-    RCC->CFGR &= ~(0x7 << 10); // Clear PPRE1 bits
-    RCC->CFGR |= (0x4U << 10); // PPRE1 = /2 (PCLK1 = HCLK / 2 = 24MHz)
-
-    RCC->CFGR &= ~(0x7 << 13); // Clear PPRE2 bits
-    RCC->CFGR |= (0x0U << 13); // PPRE2 = /1 (PCLK2 = HCLK / 1 = 48MHz)
-
-    // 8. Select PLLCLK as SYSCLK source
-    RCC->CFGR &= ~(0x3U << 0); // Clear SW bits
-    RCC->CFGR |= (0x2U << 0);  // Select PLLCLK as SYSCLK source (binary 10)
-
-    // 9. Wait for SYSCLK to switch to PLLCLK
-    while (!((RCC->CFGR & (0x3U << 2)) == (0x2U << 2))); // Wait for SWS bits to show PLLCLK
-
-#else
-    // Default or Error Handling (if no clock option is selected)
-    // This part runs if none of the SYSCLK_FREQ_... macros are defined.
-    // It's good to have a basic HSI clock or call Error_Handler here.
-    // For example, falling back to HSI 16MHz default:
-    RCC->CR |= (1U << 0); // HSION
-    while (!(RCC->CR & (1U << 1))); // HSIRDY
-    RCC->CFGR = 0x00000000U; // HPRE=/1, PPRE1=/1, PPRE2=/1, SW=HSI (default after reset)
-    FLASH->ACR &= ~(0xF << 0); // Clear LATENCY bits
-    FLASH->ACR |= (0x0 << 0);  // 0 wait states for 16MHz
-
-#endif /* SYSCLK_FREQ_... */
 }
 
+
+uint32_t RCC_GetPllOutputClock(void)
+{
+    uint32_t pllinputclock = 0;
+    uint32_t pll_m, pll_n, pll_p;
+    uint32_t pll_source;
+
+    // 1. Read the PLL source from PLLCFGR register (bit 22)
+    pll_source = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLSRC) & 0x1;
+
+    // 2. Determine the input clock frequency
+    if(pll_source == 0) // HSI selected as PLL source
+    {
+        pllinputclock = HSI_VALUE; // HSI_VALUE is defined as 16MHz
+    }
+    else // HSE selected as PLL source
+    {
+        // For simplicity, assuming a fixed 16MHz HSE value
+        // In a real application, you'd need to know the HSE crystal frequency
+        pllinputclock = HSE_VALUE;
+    }
+
+    // 3. Read the PLL configuration factors from PLLCFGR
+    pll_m = RCC->PLLCFGR & 0x3F; // Bits 5:0
+    pll_n = (RCC->PLLCFGR >> 6) & 0x1FF; // Bits 14:6
+    pll_p = (RCC->PLLCFGR >> 16) & 0x3; // Bits 17:16
+
+    // 4. Convert PLLP bits to division factor
+    if(pll_p == 0) pll_p = 2;
+    else if(pll_p == 1) pll_p = 4;
+    else if(pll_p == 2) pll_p = 6;
+    else if(pll_p == 3) pll_p = 8;
+
+    // 5. Calculate the PLL output frequency
+    // PLL_VCO = pll_source_clock / PLLM * PLLN
+    // PLL_P_output_clock = PLL_VCO / PLLP
+    uint32_t pll_vco_freq = (pllinputclock / pll_m) * pll_n;
+    uint32_t pll_p_output_freq = pll_vco_freq / pll_p;
+
+    return pll_p_output_freq;
+}

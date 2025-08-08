@@ -54,6 +54,10 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 - Try not using them in ISRs.
 ---
 ### 2. MCO
+- The SystemClock_Config() and MCO_gpioInit() functions implemented in USART_drivers explain this very well. We can now configure the MCU to operate with internal or external oscillator.
+- By default the internal oscillator operates at 16MHz which can be further manipulated using HPRE bits in RCC_CFGR. In Nulceo-F446RE board we are supplied with 8MHz crystal and these are the fixed macros which are used as HSI_VALUE 16000000 and HSE_VALUE 8000000
+- The MCO output can be controlled using the prescalar bits in RCC_CFGR_MCO2PRE bits.
+- Currently the firmware supports fixed frequencies of 8MHz,16MHz and 48MHz in internal, external and PLL configurations.
 ---
 ### 3. HSE Measurements
 ---

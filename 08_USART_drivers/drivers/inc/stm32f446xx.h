@@ -15,7 +15,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-
 /*******************Start Processor specific details*************************/
 /*
  * ARM cortex MX processors NVIC ISERx register address
@@ -138,7 +137,34 @@
 #define SAI1_BASEADDR			(APB2PERIPH_BASEADDR+0x5800)
 #define SAI2_BASEADDR			(APB2PERIPH_BASEADDR+0x5C00)
 
+/*
+ * peripheral register definition structure for PWR (Power Control)
+ */
+typedef struct
+{
+    volatile uint32_t CR;     /*!< PWR power control register,                    Address offset: 0x00 */
+    volatile uint32_t CSR;    /*!< PWR power control/status register,             Address offset: 0x04 */
+} PWR_RegDef_t;
 
+#define PWR                     	((PWR_RegDef_t*)PWR_BASEADDR)
+
+#define PWR_CR_FISSR			21
+#define PWR_CR_FMSSR			20
+#define PWR_CR_UDEN				18
+#define PWR_CR_ODSWEN			17
+#define PWR_CR_ODEN				16
+#define PWR_CR_VOS				14
+#define PWR_CR_ADCDC1			13
+#define PWR_CR_MRUDS			11
+#define PWR_CR_LPUDS			10
+#define PWR_CR_FPDS				9
+#define PWR_CR_DBP				8
+#define PWR_CR_PLS				5
+#define PWR_CR_PVDE				4
+#define PWR_CR_CSBF				3
+#define PWR_CR_CWUF				2
+#define PWR_CR_PDDS				1
+#define PWR_CR_LPUS				0
 
 /*
  * Structure to manage the RCC related registers
@@ -184,43 +210,71 @@ typedef struct
 	volatile uint32_t DCKCFGR2;			//0x94
 }RCC_RegDef_t;
 
-#define RCC_CR_REG_OFFSET		0x00
-#define RCC_CR_REG_ADDR			(RCC_BASEADDR+RCC_CR_REG_OFFSET)
+#define RCC							((RCC_RegDef_t*)RCC_BASEADDR)
 
-#define RCC_CFG_REG_OFFSET		0x08
-#define RCC_CFG_REG_ADDR		(RCC_BASEADDR + RCC_CFG_REG_OFFSET)
+//Bit values for RCC_CR
+#define RCC_CR_PLLSAIRDY		29
+#define RCC_CR_PLLSAION			28
+#define RCC_CR_PLLI2SRDY		27
+#define RCC_CR_PLLI2SON			26
+#define RCC_CR_PLLRDY			25
+#define RCC_CR_PLLON			24
+#define RCC_CR_CSSON			19
+#define RCC_CR_HSEBYP			18
+#define RCC_CR_HSERDY			17
+#define RCC_CR_HSEON			16
+#define RCC_CR_HSICAL			8
+#define RCC_CR_HSITRIM			3
+#define RCC_CR_HSIRDY			1
+#define RCC_CR_HSION			0
 
-#define RCC_GPIOC_REG_OFFSET	0x30
-#define RCC_GPIOC_REG_ADDR		(RCC_BASEADDR + RCC_GPIOC_REG_OFFSET)
+//Bit values for RCC_PLLCFGR
+#define RCC_PLLCFGR_PLLR		28	//3-bits
+#define RCC_PLLCFGR_PLLQ		24	//4-bits
+#define RCC_PLLCFGR_PLLSRC		22	//1-bit
+#define RCC_PLLCFGR_PLLP		16	//2-bits
+#define RCC_PLLCFGR_PLLN		6	//9-bits
+#define RCC_PLLCFGR_PLLM		0	//6-bits
 
-#define RCC						((RCC_RegDef_t*)RCC_BASEADDR)
+//Bit values for RCC_CFGR
+#define RCC_CFGR_MCO2			30
+#define RCC_CFGR_MCO2PRE		27
+#define RCC_CFGR_MCO1PRE		24
+#define RCC_CFGR_MCO1			21
+#define RCC_CFGR_RTCPRE			16
+#define RCC_CFGR_PPRE2			13
+#define RCC_CFGR_PPRE1			10
+#define RCC_CFGR_HPRE			4
+#define RCC_CFGR_SWS			2
+#define RCC_CFGR_SW				0
 
-// Define HSI_VALUE if not already in stm32f446xx.h
-#ifndef HSI_VALUE
-#define HSI_VALUE    ((uint32_t)16000000) // Default HSI frequency for STM32F4
-#endif
-
-// Define constants for clock configuration based on CubeMX output
-// These would typically be part of a HAL-like structure or global defines if not using HAL
-#define PWR_REGULATOR_VOLTAGE_SCALE3 (0x00004000U) // From stm32f4xx_hal_rcc.h / stm32f4xx_hal_pwr.h (PWR_CR_VOS)
-#define RCC_OSCILLATORTYPE_HSI       (0x00000001U) // From stm32f4xx_hal_rcc.h (RCC_CR_HSION)
-#define RCC_HSI_ON                   (0x00000001U) // From stm32f4xx_hal_rcc.h (RCC_CR_HSION)
-#define RCC_HSICALIBRATION_DEFAULT   (0x00000010U) // From stm32f4xx_hal_rcc.h (RCC_CR_HSICAL_Msk >> RCC_CR_HSICAL_Pos, default 16)
-#define RCC_PLL_ON                   (0x00000002U) // From stm32f4xx_hal_rcc.h (RCC_CR_PLLON)
-#define RCC_PLLSOURCE_HSI            (0x00000000U) // From stm32f4xx_hal_rcc.h (RCC_PLLCFGR_PLLSRC_HSI)
-#define RCC_PLLP_DIV2                (0x00000000U) // From stm32f4xx_hal_rcc.h (RCC_PLLCFGR_PLLP_DIV2)
-#define RCC_CLOCKTYPE_HCLK           (0x00000001U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_HPRE_Pos)
-#define RCC_CLOCKTYPE_SYSCLK         (0x00000002U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_SW_Pos)
-#define RCC_CLOCKTYPE_PCLK1          (0x00000004U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE1_Pos)
-#define RCC_CLOCKTYPE_PCLK2          (0x00000008U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE2_Pos)
-#define RCC_SYSCLKSOURCE_PLLCLK      (0x00000008U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_SW_PLL)
-#define RCC_SYSCLK_DIV4              (0x00000080U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_HPRE_DIV4)
-#define RCC_HCLK_DIV2                (0x00000100U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE1_DIV2)
-#define RCC_HCLK_DIV1                (0x00000000U) // From stm32f4xx_hal_rcc.h (RCC_CFGR_PPRE2_DIV1)
-
-// Define Flash Latency (for example, FLASH_LATENCY_0 from stm32f4xx_hal_flash.h)
-#define FLASH_ACR_LATENCY_0WS        (0x00000000U) // For 0 wait states
-
+//Bit value for RCC_APB1ENR
+#define RCC_APB1ENR_DACEN				29
+#define RCC_APB1ENR_PWREN				28
+#define RCC_APB1ENR_CECEN				27
+#define RCC_APB1ENR_CAN2EN				26
+#define RCC_APB1ENR_CAN1EN				25
+#define RCC_APB1ENR_FMPI2C1EN			24
+#define RCC_APB1ENR_I2C3EN				23
+#define RCC_APB1ENR_I2C2EN				22
+#define RCC_APB1ENR_I2C1EN				21
+#define RCC_APB1ENR_UART5EN				20
+#define RCC_APB1ENR_UART4EN				19
+#define RCC_APB1ENR_USART3EN			18
+#define RCC_APB1ENR_USART2EN			17
+#define RCC_APB1ENR_SPDIFRXEN			16
+#define RCC_APB1ENR_SPI3EN				15
+#define RCC_APB1ENR_SPI2EN				14
+#define RCC_APB1ENR_WWDGEN				11
+#define RCC_APB1ENR_TIM14EN				8
+#define RCC_APB1ENR_TIM13EN				7
+#define RCC_APB1ENR_TIM12EN				6
+#define RCC_APB1ENR_TIM7EN				5
+#define RCC_APB1ENR_TIM6EN				4
+#define RCC_APB1ENR_TIM5EN				3
+#define RCC_APB1ENR_TIM4EN				2
+#define RCC_APB1ENR_TIM3EN				1
+#define RCC_APB1ENR_TIM2EN				0
 
 /*
  * Structure to manage the EXTI related registers
@@ -240,34 +294,16 @@ typedef struct
 #define EXTI					((EXTI_RegDef_t*)EXTI_BASEADDR)
 
 
-/*
- * Base addresses of peripherals which are interfaced with the APB1 bus
- * APB1: Advanced peripheral bus
- */
-// ... (your existing APB1 definitions) ...
-#define PWR_BASEADDR            (APB1PERIPH_BASEADDR+0x7000) // Your existing definition
-// ...
 
 /*
  * FLASH Access Control Register (ACR) base address.
  * FLASH is a special peripheral, its registers aren't part of a common struct in the same way.
  * The ACR is directly accessed for latency settings.
  */
-#define FLASH_R_BASE            0x40023C00U     // Base address of FLASH registers
+#define FLASH_BASE            	0x40023C00U     // Base address of FLASH registers
 #define FLASH_ACR_OFFSET        0x00U           // ACR is at offset 0 from FLASH_R_BASE
 
-/*
- * peripheral register definition structure for PWR (Power Control)
- */
-typedef struct
-{
-    volatile uint32_t CR;     /*!< PWR power control register,                    Address offset: 0x00 */
-    volatile uint32_t CSR;    /*!< PWR power control/status register,             Address offset: 0x04 */
-} PWR_RegDef_t;
 
-// ... (after other peripheral definitions like RCC, EXTI, SYSCFG, SPI) ...
-
-#define PWR                     ((PWR_RegDef_t*)PWR_BASEADDR)
 //#define FLASH_ACR_LATENCY_0WS   (0x00000000U) // For 0 wait states
 
 
@@ -284,7 +320,14 @@ typedef struct
 } FLASH_TypeDef; // Using TypeDef as typically done in HAL/CMSIS
 
 // Add this peripheral definition along with GPIOA, GPIOB, RCC, EXTI, etc.
-#define FLASH                   ((FLASH_TypeDef *)FLASH_R_BASE)
+#define FLASH                   ((FLASH_TypeDef *)FLASH_BASE)
+
+#define FLASH_ACR_DCRST			12
+#define FLASH_ACR_ICRST			11
+#define FLASH_ACR_DCEN			10
+#define FLASH_ACR_ICEN			9
+#define FLASH_ACR_PRFTEN		8
+#define FLASH_ACR_LATENCY		0
 
 /*
  * Peripheral Clock Enable macros for SYSCFG registers
@@ -310,63 +353,63 @@ typedef struct
 /*
  * Bit position definition for AHB1ENR to Enable the respective GPIOx peripheral
  */
-#define GPIOA_EN_BIT			0
-#define GPIOB_EN_BIT			1
-#define GPIOC_EN_BIT			2
-#define GPIOD_EN_BIT			3
-#define GPIOE_EN_BIT			4
-#define GPIOF_EN_BIT			5
-#define GPIOG_EN_BIT			6
-#define GPIOH_EN_BIT			7
+#define GPIOA_EN			0
+#define GPIOB_EN			1
+#define GPIOC_EN			2
+#define GPIOD_EN			3
+#define GPIOE_EN			4
+#define GPIOF_EN			5
+#define GPIOG_EN			6
+#define GPIOH_EN			7
 
 
 /*
  * Peripheral Clock Enable macros for GPIOx registers
  */
 
-#define GPIOA_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOA_EN_BIT))
-#define GPIOB_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOB_EN_BIT))
-#define GPIOC_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOC_EN_BIT))
-#define GPIOD_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOD_EN_BIT))
-#define GPIOE_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOE_EN_BIT))
-#define GPIOF_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOF_EN_BIT))
-#define GPIOG_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOG_EN_BIT))
-#define GPIOH_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOH_EN_BIT))
+#define GPIOA_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOA_EN))
+#define GPIOB_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOB_EN))
+#define GPIOC_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOC_EN))
+#define GPIOD_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOD_EN))
+#define GPIOE_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOE_EN))
+#define GPIOF_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOF_EN))
+#define GPIOG_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOG_EN))
+#define GPIOH_PCLK_EN()			(RCC->AHB1ENR|=(1<<GPIOH_EN))
 
 /*
  * Peripheral Clock Enable macros for GPIOx registers
  */
 
-#define GPIOA_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOA_EN_BIT))
-#define GPIOB_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOB_EN_BIT))
-#define GPIOC_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOC_EN_BIT))
-#define GPIOD_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOD_EN_BIT))
-#define GPIOE_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOE_EN_BIT))
-#define GPIOF_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOF_EN_BIT))
-#define GPIOG_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOG_EN_BIT))
-#define GPIOH_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOH_EN_BIT))
+#define GPIOA_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOA_EN))
+#define GPIOB_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOB_EN))
+#define GPIOC_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOC_EN))
+#define GPIOD_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOD_EN))
+#define GPIOE_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOE_EN))
+#define GPIOF_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOF_EN))
+#define GPIOG_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOG_EN))
+#define GPIOH_PCLK_DIS()		(RCC->AHB1ENR &=~(1<<GPIOH_EN))
 
 /*
  * Bit position definition for AHB1ENR to Enable the respective GPIOx peripheral
  */
-#define GPIOA_RST_BIT			0
-#define GPIOB_RST_BIT			1
-#define GPIOC_RST_BIT			2
-#define GPIOD_RST_BIT			3
-#define GPIOE_RST_BIT			4
-#define GPIOF_RST_BIT			5
-#define GPIOG_RST_BIT			6
-#define GPIOH_RST_BIT			7
+#define GPIOA_RST			0
+#define GPIOB_RST			1
+#define GPIOC_RST			2
+#define GPIOD_RST			3
+#define GPIOE_RST			4
+#define GPIOF_RST			5
+#define GPIOG_RST			6
+#define GPIOH_RST			7
 
 //GPIO register RESET
-#define GPIOA_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOA_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOA_RST_BIT);}while(0)
-#define GPIOB_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOB_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOB_RST_BIT);}while(0)
-#define GPIOC_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOC_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOC_RST_BIT);}while(0)
-#define GPIOD_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOD_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOD_RST_BIT);}while(0)
-#define GPIOE_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOE_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOE_RST_BIT);}while(0)
-#define GPIOF_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOF_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOF_RST_BIT);}while(0)
-#define GPIOG_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOG_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOG_RST_BIT);}while(0)
-#define GPIOH_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOH_RST_BIT);RCC->AHB1RSTR&=~(1<<GPIOH_RST_BIT);}while(0)
+#define GPIOA_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOA_RST);RCC->AHB1RSTR&=~(1<<GPIOA_RST);}while(0)
+#define GPIOB_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOB_RST);RCC->AHB1RSTR&=~(1<<GPIOB_RST);}while(0)
+#define GPIOC_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOC_RST);RCC->AHB1RSTR&=~(1<<GPIOC_RST);}while(0)
+#define GPIOD_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOD_RST);RCC->AHB1RSTR&=~(1<<GPIOD_RST);}while(0)
+#define GPIOE_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOE_RST);RCC->AHB1RSTR&=~(1<<GPIOE_RST);}while(0)
+#define GPIOF_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOF_RST);RCC->AHB1RSTR&=~(1<<GPIOF_RST);}while(0)
+#define GPIOG_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOG_RST);RCC->AHB1RSTR&=~(1<<GPIOG_RST);}while(0)
+#define GPIOH_REG_RESET()		do{RCC->AHB1RSTR|=(1<<GPIOH_RST);RCC->AHB1RSTR&=~(1<<GPIOH_RST);}while(0)
 
 
 /*
@@ -492,42 +535,42 @@ typedef struct
 /*
  * Bit position definition for APBxENR to Enable the respective I2Cx peripheral
  */
-#define SPI1_EN_BIT				12
-#define SPI2_EN_BIT				14
-#define SPI3_EN_BIT				15
-#define SPI4_EN_BIT				13
+#define SPI1_EN				12
+#define SPI2_EN				14
+#define SPI3_EN				15
+#define SPI4_EN				13
 
 /*
  * Peripheral Clock Enable macros for SPIx registers
  */
-#define SPI1_PCLK_EN()			(RCC->APB2ENR|=(1<<SPI1_EN_BIT))
-#define SPI2_PCLK_EN()			(RCC->APB1ENR|=(1<<SPI2_EN_BIT))
-#define SPI3_PCLK_EN()			(RCC->APB1ENR|=(1<<SPI3_EN_BIT))
-#define SPI4_PCLK_EN()			(RCC->APB2ENR|=(1<<SPI4_EN_BIT))
+#define SPI1_PCLK_EN()			(RCC->APB2ENR|=(1<<SPI1_EN))
+#define SPI2_PCLK_EN()			(RCC->APB1ENR|=(1<<SPI2_EN))
+#define SPI3_PCLK_EN()			(RCC->APB1ENR|=(1<<SPI3_EN))
+#define SPI4_PCLK_EN()			(RCC->APB2ENR|=(1<<SPI4_EN))
 
 /*
  * Peripheral Clock Enable macros for SPIx registers
  */
-#define SPI1_PCLK_DIS()			(RCC->APB2ENR &=~(1<<SPI1_EN_BIT))
-#define SPI2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<SPI2_EN_BIT))
-#define SPI3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<SPI3_EN_BIT))
-#define SPI4_PCLK_DIS()			(RCC->APB2ENR &=~(1<<SPI4_EN_BIT))
+#define SPI1_PCLK_DIS()			(RCC->APB2ENR &=~(1<<SPI1_EN))
+#define SPI2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<SPI2_EN))
+#define SPI3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<SPI3_EN))
+#define SPI4_PCLK_DIS()			(RCC->APB2ENR &=~(1<<SPI4_EN))
 
 /*
  * Bit position definition for APBxRSTR to Reset the respective I2Cx peripheral
  */
-#define SPI1_RST_BIT			12
-#define SPI2_RST_BIT			14
-#define SPI3_RST_BIT			15
-#define SPI4_RST_BIT			13
+#define SPI1_RST			12
+#define SPI2_RST			14
+#define SPI3_RST			15
+#define SPI4_RST			13
 
 /*
  * Register Reset macros for SPIx registers
  */
-#define SPI1_REG_RESET()		do{RCC->APB2RSTR|=(1<<SPI1_RST_BIT);RCC->APB2RSTR&=~(1<<SPI1_RST_BIT);}while(0)
-#define SPI2_REG_RESET()		do{RCC->APB1RSTR|=(1<<SPI2_RST_BIT);RCC->APB1RSTR&=~(1<<SPI2_RST_BIT);}while(0)
-#define SPI3_REG_RESET()		do{RCC->APB1RSTR|=(1<<SPI3_RST_BIT);RCC->APB1RSTR&=~(1<<SPI3_RST_BIT);}while(0)
-#define SPI4_REG_RESET()		do{RCC->APB2RSTR|=(1<<SPI4_RST_BIT);RCC->APB2RSTR&=~(1<<SPI4_RST_BIT);}while(0)
+#define SPI1_REG_RESET()		do{RCC->APB2RSTR|=(1<<SPI1_RST);RCC->APB2RSTR&=~(1<<SPI1_RST);}while(0)
+#define SPI2_REG_RESET()		do{RCC->APB1RSTR|=(1<<SPI2_RST);RCC->APB1RSTR&=~(1<<SPI2_RST);}while(0)
+#define SPI3_REG_RESET()		do{RCC->APB1RSTR|=(1<<SPI3_RST);RCC->APB1RSTR&=~(1<<SPI3_RST);}while(0)
+#define SPI4_REG_RESET()		do{RCC->APB2RSTR|=(1<<SPI4_RST);RCC->APB2RSTR&=~(1<<SPI4_RST);}while(0)
 
 
 /*
@@ -646,34 +689,34 @@ typedef struct
 /*
  * Bit position definition for ABP1ENR to Enable the respective I2Cx peripheral
  */
-#define I2C1_EN_BIT				21
-#define I2C2_EN_BIT				22
-#define I2C3_EN_BIT				23
+#define I2C1_EN				21
+#define I2C2_EN				22
+#define I2C3_EN				23
 
 /*
  * Peripheral Clock Enable macros for I2Cx registers
  */
-#define I2C1_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C1_EN_BIT))
-#define I2C2_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C2_EN_BIT))
-#define I2C3_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C3_EN_BIT))
+#define I2C1_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C1_EN))
+#define I2C2_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C2_EN))
+#define I2C3_PCLK_EN()			(RCC->APB1ENR|=(1<<I2C3_EN))
 
 /*
  * Peripheral Clock Enable macros for I2Cx registers
  */
-#define I2C1_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C1_EN_BIT))
-#define I2C2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C2_EN_BIT))
-#define I2C3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C3_EN_BIT))
+#define I2C1_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C1_EN))
+#define I2C2_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C2_EN))
+#define I2C3_PCLK_DIS()			(RCC->APB1ENR &=~(1<<I2C3_EN))
 
 /*
  * Bit position definition for AHB1RSTR to Reset the respective I2Cx peripheral
  */
-#define I2C1_RST_BIT			21
-#define I2C2_RST_BIT			22
-#define I2C3_RST_BIT			23
+#define I2C1_RST			21
+#define I2C2_RST			22
+#define I2C3_RST			23
 
-#define I2C1_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C1_RST_BIT);RCC->AHB1RSTR&=~(1<<I2C1_RST_BIT);}while(0)
-#define I2C2_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C2_RST_BIT);RCC->AHB1RSTR&=~(1<<I2C2_RST_BIT);}while(0)
-#define I2C3_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C3_RST_BIT);RCC->AHB1RSTR&=~(1<<I2C3_RST_BIT);}while(0)
+#define I2C1_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C1_RST);RCC->AHB1RSTR&=~(1<<I2C1_RST);}while(0)
+#define I2C2_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C2_RST);RCC->AHB1RSTR&=~(1<<I2C2_RST);}while(0)
+#define I2C3_REG_RESET()		do{RCC->AHB1RSTR|=(1<<I2C3_RST);RCC->AHB1RSTR&=~(1<<I2C3_RST);}while(0)
 
 
 /*
@@ -797,39 +840,39 @@ typedef struct
 /*
  * Bit position definition for AHB1RSTR to Reset the respective USARTx peripheral
  */
-#define USART1_APB_BIT			4
-#define USART2_APB_BIT			17
-#define USART3_APB_BIT			18
-#define UART4_APB_BIT			19
-#define UART5_APB_BIT			20
-#define USART6_APB_BIT			5
+#define USART1_APB			4
+#define USART2_APB			17
+#define USART3_APB			18
+#define UART4_APB			19
+#define UART5_APB			20
+#define USART6_APB			5
 
 /*
  * Peripheral Clock Enable macros for USART registers
  */
-#define USART1_PCLK_EN()		(RCC->APB2ENR|=(1<<USART1_APB_BIT))
-#define USART2_PCLK_EN()		(RCC->APB1ENR|=(1<<USART2_APB_BIT))
-#define USART3_PCLK_EN()		(RCC->APB1ENR|=(1<<USART3_APB_BIT))
-#define UART4_PCLK_EN()			(RCC->APB1ENR|=(1<<UART4_APB_BIT))
-#define UART5_PCLK_EN()			(RCC->APB1ENR|=(1<<UART5_APB_BIT))
-#define USART6_PCLK_EN()		(RCC->APB2ENR|=(1<<USART6_APB_BIT))
+#define USART1_PCLK_EN()		(RCC->APB2ENR|=(1<<USART1_APB))
+#define USART2_PCLK_EN()		(RCC->APB1ENR|=(1<<USART2_APB))
+#define USART3_PCLK_EN()		(RCC->APB1ENR|=(1<<USART3_APB))
+#define UART4_PCLK_EN()			(RCC->APB1ENR|=(1<<UART4_APB))
+#define UART5_PCLK_EN()			(RCC->APB1ENR|=(1<<UART5_APB))
+#define USART6_PCLK_EN()		(RCC->APB2ENR|=(1<<USART6_APB))
 
 /*
  * Peripheral Clock Enable macros for USART registers
  */
-#define USART1_PCLK_DIS()		(RCC->APB2ENR &=~(1<<USART1_APB_BIT))
-#define USART2_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART2_APB_BIT))
-#define USART3_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART3_APB_BIT))
-#define UART4_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART4_APB_BIT))
-#define UART5_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART5_APB_BIT))
-#define USART6_PCLK_DIS()		(RCC->APB2ENR &=~(1<<USART6_APB_BIT))
+#define USART1_PCLK_DIS()		(RCC->APB2ENR &=~(1<<USART1_APB))
+#define USART2_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART2_APB))
+#define USART3_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART3_APB))
+#define UART4_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART4_APB))
+#define UART5_PCLK_DIS()		(RCC->APB1ENR &=~(1<<USART5_APB))
+#define USART6_PCLK_DIS()		(RCC->APB2ENR &=~(1<<USART6_APB))
 
-#define USART1_REG_RESET()		do{RCC->APB2RSTR|=(1<<USART1_APB_BIT);RCC->APB2RSTR&=~(1<<USART1_APB_BIT);}while(0)
-#define USART2_REG_RESET()		do{RCC->APB1RSTR|=(1<<USART2_APB_BIT);RCC->APB1RSTR&=~(1<<USART2_APB_BIT);}while(0)
-#define USART3_REG_RESET()		do{RCC->APB1RSTR|=(1<<USART3_APB_BIT);RCC->APB1RSTR&=~(1<<USART3_APB_BIT);}while(0)
-#define UART4_REG_RESET()		do{RCC->APB1RSTR|=(1<<UART4_APB_BIT); RCC->APB1RSTR&=~(1<<UART4_APB_BIT);} while(0)
-#define UART5_REG_RESET()		do{RCC->APB1RSTR|=(1<<UART5_APB_BIT); RCC->APB1RSTR&=~(1<<UART5_APB_BIT);} while(0)
-#define USART6_REG_RESET()		do{RCC->APB2RSTR|=(1<<USART6_APB_BIT);RCC->APB2RSTR&=~(1<<USART6_APB_BIT);}while(0)
+#define USART1_REG_RESET()		do{RCC->APB2RSTR|=(1<<USART1_APB);RCC->APB2RSTR&=~(1<<USART1_APB);}while(0)
+#define USART2_REG_RESET()		do{RCC->APB1RSTR|=(1<<USART2_APB);RCC->APB1RSTR&=~(1<<USART2_APB);}while(0)
+#define USART3_REG_RESET()		do{RCC->APB1RSTR|=(1<<USART3_APB);RCC->APB1RSTR&=~(1<<USART3_APB);}while(0)
+#define UART4_REG_RESET()		do{RCC->APB1RSTR|=(1<<UART4_APB); RCC->APB1RSTR&=~(1<<UART4_APB);} while(0)
+#define UART5_REG_RESET()		do{RCC->APB1RSTR|=(1<<UART5_APB); RCC->APB1RSTR&=~(1<<UART5_APB);} while(0)
+#define USART6_REG_RESET()		do{RCC->APB2RSTR|=(1<<USART6_APB);RCC->APB2RSTR&=~(1<<USART6_APB);}while(0)
 
 /*
  * IRQ(Interrupt Request) Numbers of STM32F446xx MCU

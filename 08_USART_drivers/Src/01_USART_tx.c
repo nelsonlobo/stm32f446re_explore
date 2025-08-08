@@ -18,8 +18,14 @@ void delay(void);
 void USART3_GPIOInit(void);
 void USART3_Init(void);
 void GPIO_ButtonInit(void);
+void MCO_gpioInit(void);
 
-int main(void) {
+
+
+int main(void)
+{
+	SystemClock_Config();
+	MCO_gpioInit();
 
     // Initialize all peripherals
     GPIO_ButtonInit();
@@ -28,6 +34,8 @@ int main(void) {
 
     // Enable the USART3 peripheral.
     USART_PeripheralControl(USART3, ENABLE);
+
+    printf("USART_Polling\n");
 
     // Main polling loop
     while (1)
@@ -52,7 +60,8 @@ int main(void) {
 
             // Transmit the message using the new function.
             transmitStrUart(tx_msg);
-
+//            USART_SendData(&usart3_handle, (uint8_t *)tx_msg, strlen(tx_msg));
+            printf("TxData:%s\n",tx_msg);
             //IMP: On the reception side of the controller you should
             // add a delay of atleast 5ms based on the baudrate so that
             // you are comfortably prepared to receive data to be sent
@@ -208,3 +217,36 @@ void GPIO_ButtonInit(void)
     gpioBtn.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
     GPIO_Init(&gpioBtn);
 }
+
+
+// Function to initialize the MCO2 (PC9)
+void MCO_gpioInit(void)
+{
+	uint32_t clkSrc = ((RCC->CFGR >> RCC_CFGR_SWS) & 0x3);
+
+    GPIO_Handle_t mcoPin;
+
+    mcoPin.pGPIOx = GPIOC;
+    mcoPin.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NUM_9;
+    mcoPin.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
+    mcoPin.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_HIGH;
+    mcoPin.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+    mcoPin.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+    mcoPin.GPIO_PinConfig.GPIO_PinAltFnMode = 0;
+    GPIO_Init(&mcoPin);
+
+    // 4. Set MCO2 source to SYSCLK (0b00) and prescaler to divide by 4 (0b110)
+    // MCO2 is on bits 31:30 of RCC->CFGR, MCO2PRE is on bits 29:27
+    // MCO2 source selection (0b00=SYSCLK, 0b01=PLLI2S, 0b10=HSE, 0b11=PLL)
+    // MCO2 prescaler (0b000=no div, 0b100=div2, 0b101=div3, 0b110=div4, 0b111=div5)
+    RCC->CFGR &= ~(0x3U << RCC_CFGR_MCO2); // Clear MCO2 source selection (bits 31:30)
+    if(clkSrc >1)	//For PLL
+    	RCC->CFGR |= (0x3U << RCC_CFGR_MCO2);
+    if(clkSrc ==1)	//For HSE
+    	RCC->CFGR |= (0x2U << RCC_CFGR_MCO2);
+    // RCC->CFGR |= (0x0U << 30); // Select SYSCLK as MCO2 source (no change needed)
+
+    RCC->CFGR &= ~(0x7U << RCC_CFGR_MCO2PRE); // Clear MCO2 prescaler selection (bits 29:27)
+    RCC->CFGR |= (0x6U << RCC_CFGR_MCO2PRE); // Set prescaler to divide by 4 (0b110)
+}
+
